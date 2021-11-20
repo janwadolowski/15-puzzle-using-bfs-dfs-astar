@@ -60,3 +60,20 @@ class State:
         self.state = operator(start_state)
         self.parent = start_state
         self.preceding_operator = operator
+
+    def up(cls, start_state: np.array) -> np.array:
+        pass
+
+    def down(cls, start_state) -> np.array:
+        pass
+
+    def left(cls, start_state) -> np.array:
+        return np.copy(start_state)
+
+    def right(cls, start_state) -> np.array:
+        pass
+
+    @classmethod
+    def _find_zero(cls, state: np.array) -> Tuple[int]:
+        """ Return zero-based coordinates for empty tile as a tuple (<row>, <column>)"""
+        return np.where(state == 0)[0]
