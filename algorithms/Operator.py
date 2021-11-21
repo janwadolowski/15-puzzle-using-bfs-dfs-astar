@@ -4,7 +4,6 @@ import numpy as np
 
 
 class Operator:
-
     @classmethod
     def up(cls, start_state: np.array) -> np.array:
         pass
@@ -23,5 +22,5 @@ class Operator:
 
     @classmethod
     def _find_empty(cls, state: np.array) -> Tuple[int]:
-        """ Return zero-based coordinates for empty tile as a tuple (<row>, <column>)"""
+        """Return zero-based coordinates for empty tile as a tuple (<row>, <column>)"""
         return np.where(state == 0)[0]

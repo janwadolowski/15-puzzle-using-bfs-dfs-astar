@@ -6,12 +6,11 @@ from typing import Any
 
 
 class Logger:
-
     def __init__(self, logfile: str):
         self.logfile = Path(logfile)
 
     def _write_log(self, msg: Any):
-        with open(self.logfile, 'a+') as f:
+        with open(self.logfile, "a+") as f:
             f.write(str(msg))
 
     def TIME(self, func):
@@ -20,7 +19,9 @@ class Logger:
             start = time()
             func_return = func(*args, **kwargs)
             end = time()
-            timestamp = datetime.now().strftime('%H:%M:%S')
-            self._write_log(f"[{timestamp}] {func.func_name} evaluated in {end - start} s.")
+            timestamp = datetime.now().strftime("%H:%M:%S")
+            self._write_log(
+                f"[{timestamp}] {func.func_name} evaluated in {end - start} s."
+            )
 
         func()
