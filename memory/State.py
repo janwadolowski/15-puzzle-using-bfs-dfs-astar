@@ -6,7 +6,7 @@ from typing import Optional, List, Tuple
 # noinspection Mypy
 import numpy as np
 
-from Exceptiona import InvalidCoordinatesException
+from Exception import InvalidCoordinatesException
 
 
 @dataclass
@@ -56,10 +56,9 @@ class State:
         return self._move("right")
 
     def _find_zero(self) -> Tuple[int, int]:
-        """Return zero-based coordinates for empty tile as a tuple (<row>, <column>)"""
-        return tuple(
-            [int(x) for x in np.where(self.state == 0)]
-        )  # Returns a list of all matches, so we only take the first match, since there's only 1 zero anyway
+        """Return zero-based coordinates for 0 tile as a tuple (<row>, <column>)"""
+        a, b = np.where(self.state == 0)
+        return int(a), int(b)  # Explicit casting for mypy
 
     @staticmethod
     def _sum_tuples(first: Tuple[int, int], second: Tuple[int, int]):
@@ -102,13 +101,13 @@ class State:
         direction_coords = None
         match direction:
             case "up":
-                direction_coords = (0, -1)
-            case "down":
-                direction_coords = (0, 1)
-            case "left":
                 direction_coords = (-1, 0)
-            case "right":
+            case "down":
                 direction_coords = (1, 0)
+            case "left":
+                direction_coords = (0, -1)
+            case "right":
+                direction_coords = (0, 1)
 
         # If valid direction and the move is legal (within the state array boundaries) proceed
         if direction_coords and self._check_legal_move(direction_coords):
