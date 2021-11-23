@@ -1,5 +1,4 @@
-# Solving a 15 puzzle
----
+Solving a 15 puzzle
 
 ## Authors
 
