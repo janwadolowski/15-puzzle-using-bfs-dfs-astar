@@ -3,6 +3,7 @@ import datetime
 import os
 import sys
 from pathlib import Path
+from typing.io import TextIO
 
 from loguru import logger
 
@@ -67,29 +68,29 @@ def main() -> None:
     stats_file.close()
 
 
-def prepare_file(file_path: str):
+def prepare_file(file_path: str) -> TextIO:
+    """Creates a file under a specified path."""
     file_dir = os.path.realpath(file_path)
-    file = open(file_dir, "w+")
-    return file
+    return open(file_dir, "w+")
 
 
 def write_to_solution_file(moves: str, sol_file) -> None:
-    if moves is None:
+    if moves is None:  # If the result was not found we write -1
         sol_file.write(str(-1))
-    else:
+    else:  # else write length and path to the target state
         sol_file.write(f"{len(moves)}\n{moves}")
 
 
 def write_to_stats_file(
     n_moves: int,
-    frontier: int,
+    visited: int,
     explored: int,
     recursion: int,
     time_elapsed: float,
     stats_file,
 ) -> None:
     stats_file.write(
-        f"{n_moves}\n{frontier}\n{explored}\n{recursion}\n{format(time_elapsed, '.3f')}\n"
+        f"{n_moves}\n{visited}\n{explored}\n{recursion}\n{format(time_elapsed, '.3f')}\n"
     )
 
 

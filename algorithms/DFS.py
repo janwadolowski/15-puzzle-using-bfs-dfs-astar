@@ -17,24 +17,23 @@ class DFS(BaseAlgorithm):
         self.max_depth: int = 0
         self.visited_states: int = 1
 
-    """
-    Steps of the algorithm:
-    1. check if starting State is the target State, if yes return the path to it, else proceed
-    2. add starting State to (open-list)frontier
-    3. get a list of possible neighbors, reverse the list
-    4. iterating over neighbors steps 5 - 6, if all neighbors verified go to step 7
-    5. check if neighbor is target State, if yes return path to it, else
-    6. add neighbor to open-list(frontier) (without checking existence on list)
-    7. add explored State to closed-list(explored), remove from open-list(frontier)
-    8. get next State (order like in stack LIFO) from open-list and check if it's in closed-list(explored), if not -> go to step 3
-    9. if target State not found -> return None
-
-    :param state: A starting State of the puzzle
-    :return: A list of consecutive operations conducted on an initial array to achieve a target array -- a solved puzzle.
-    If no solution has been found - return None
-    """
-
     def solve(self, state: State) -> Optional[str]:
+        """
+        Steps of the algorithm:
+        1. check if starting State is the target State, if yes return the path to it, else proceed
+        2. add starting State to (open-list)frontier
+        3. get a list of possible neighbors, reverse the list
+        4. iterating over neighbors steps 5 - 6, if all neighbors verified go to step 7
+        5. check if neighbor is target State, if yes return path to it, else
+        6. add neighbor to open-list(frontier) (without checking existence on list)
+        7. add explored State to closed-list(explored), remove from open-list(frontier)
+        8. get next State (order like in stack LIFO) from open-list and check if it's in closed-list(explored), if not -> go to step 3
+        9. if target State not found -> return None
+
+        :param state: A starting State of the puzzle
+        :return: A list of consecutive operations conducted on an initial array to achieve a target array -- a solved puzzle.
+        If no solution has been found - return None
+        """
         tmp_state: State | None = None
 
         # Check if starting State is target State

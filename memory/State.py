@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Dict, List, Literal, Optional, Tuple, TypeAlias
+from typing import Callable, Literal, Optional, TypeAlias
 
 # noinspection Mypy
 import numpy as np
@@ -19,7 +19,7 @@ class State:
     preceding_operator: DIRECTION | None = None
 
     def __post_init__(self):
-        self.operations_str_mapping: Dict[str, Callable] = {
+        self.operations_str_mapping: dict[str, Callable] = {
             "L": self.left,
             "R": self.right,
             "U": self.up,
@@ -37,8 +37,8 @@ class State:
 
         :param filepath: Path to txt file the with initial State
         :return: A loaded State or None if the operation failed.
+        :raise IOError: If a file doesn't exist or cannot be accessed.
         """
-        # TODO: Add :raise <Exception>: docstring
         filepath_ = Path(filepath)
         try:
             with open(filepath_, "r") as f:
@@ -47,10 +47,11 @@ class State:
                     _,
                     *output_str,
                 ) = f.readlines()  # ['1 2 3 4', '5 6 7 8', '9 10 11 12', '13 14 15 0']
-                output_list_str: List[List[str]] = [
+                output_list_str: list[list[str]] = [
                     line.strip("\n").split(sep=" ") for line in output_str
                 ]
-                # [[ '5',  '6',  '7',  '8'],
+                # [[ '1',  '2',  '3',  '4'],
+                #  [ '5',  '6',  '7',  '8'],
                 #  [ '9', '10', '11', '12'],
                 #  ['13', '14', '15',  '0']]
                 array_of_str = np.array(output_list_str)
@@ -63,7 +64,8 @@ class State:
             logger.error(e)
             raise e
 
-    def get_state_shape(self) -> Tuple[int, int]:
+    def get_state_shape(self) -> tuple[int, int]:
+        """Return array's dimensions."""
         return self.array.shape
 
     def up(self) -> Optional["State"]:
@@ -78,24 +80,24 @@ class State:
         """Get a State and return a new one with 0 moved left or None if a move is illegal"""
         return self._move("left")
 
-    def right(self) -> "State":
+    def right(self) -> Optional["State"]:
         """Get a State and return a new one with 0 moved right or None if a move is illegal"""
         return self._move("right")
 
-    def _find_zero(self) -> Tuple[int, int]:
+    def _find_zero(self) -> tuple[int, int]:
         """Return zero-based coordinates for 0 tile as a tuple (<row>, <column>)"""
         a, b = np.where(self.array == 0)
         return int(a), int(b)  # Explicit casting for mypy
 
     @staticmethod
-    def _sum_tuples(first: Tuple[int, int], second: Tuple[int, int]):
+    def _sum_tuples(first: tuple[int, int], second: tuple[int, int]):
         """Defines operation: (a, b) + (c, d) = (a+b, c+d)"""
         return first[0] + second[0], first[1] + second[1]
 
     @staticmethod
     def _diff_tuples(
-        first: Tuple[int, int], second: Tuple[int, int]
-    ) -> Tuple[int, int]:
+        first: tuple[int, int], second: tuple[int, int]
+    ) -> tuple[int, int]:
         """
         Calculates difference in coordinates between two tuples as a tuple with coordinates distance like so:
         (a, b), (c, d) -> ( abs(c-a), abs(d-b) )
@@ -121,10 +123,10 @@ class State:
             logger.error(f"Coords for tile {tile} not found.")
             return None
 
-    def _check_legal_move(self, change: Tuple[int, int]) -> bool:
+    def _check_legal_move(self, change: tuple[int, int]) -> bool:
         """Returns True if the operation up | down | left | right is valid else False"""
-        zero_coords: Tuple[int, int] = self._find_zero()
-        summed: Tuple[int, int] = self._sum_tuples(zero_coords, change)
+        zero_coords: tuple[int, int] = self._find_zero()
+        summed: tuple[int, int] = self._sum_tuples(zero_coords, change)
 
         rows_len, columns_len = self.array.shape
 
@@ -135,16 +137,16 @@ class State:
         else:
             return True
 
-    def _swap_values(self, swap_with: Tuple[int, int]) -> np.ndarray:
+    def _swap_values(self, swap_with: tuple[int, int]) -> np.ndarray:
         """
         Return a new ndarray with swapped values
 
         :param swap_with: a tuple with indexes of to swap 0 with
         """
-        a: Tuple[int, int] = self._find_zero()
-        b: Tuple[int, int] = swap_with  # for better legibility
+        a: tuple[int, int] = self._find_zero()
+        b: tuple[int, int] = swap_with  # for better legibility
 
-        coords_diff: Tuple[int, int] = self._sum_tuples(a, (-b[0], -b[1]))
+        coords_diff: tuple[int, int] = self._sum_tuples(a, (-b[0], -b[1]))
         coords_diff = (abs(coords_diff[0]), abs(coords_diff[1]))
         # Can only move 1 index in any direction, if coords are too far apart raise an error
         if coords_diff not in [(0, 1), (1, 0)]:
@@ -167,7 +169,7 @@ class State:
         :param direction: one of: "left" | "right" | "up" | "down"
         :return: new State with zero moved in a specified direction or None if a move is illegal.
         """
-        direction_coords: Tuple[int, int] | None = None
+        direction_coords: tuple[int, int] | None = None
         match direction:
             case "left":
                 direction_coords = (0, -1)
@@ -196,12 +198,12 @@ class State:
             )
             return None
 
-    def get_neighbors(self, neighbors_query_order: str) -> List["State"]:
-        available_moves: List[State] = []
+    def get_neighbors(self, neighbors_query_order: str = "LRUD") -> list["State"]:
+        available_moves: list[State] = []
         for direction in neighbors_query_order:
             if available := self.operations_str_mapping[
                 direction
-            ]():  # iterate over "LRUD" and call function mapped to direction, e.g. {"U": self.up}
+            ]():  # iterate over neighbors_query_order and call function mapped to direction, e.g. {"U": self.up()}
                 available_moves.append(available)
         return available_moves
 
@@ -230,7 +232,7 @@ class State:
     def is_target_state(self) -> bool:
         return self == self.target_state
 
-    def get_path_to_state(self, path_to_state: List[str] = None) -> str:
+    def get_path_to_state(self, path_to_state: list[str] = None) -> str:
         """Get a list of operations required to reach a current State from the first State (i.e. State without a parent)"""
         if path_to_state is None:
             path_to_state = []
@@ -253,9 +255,11 @@ class State:
             return self.parent.get_state_depth() + 1
 
     def __hash__(self) -> int:
+        """We hash a state only by its array"""
         return hash(self.array.tobytes())
 
     def __eq__(self, other) -> bool:
+        """We compare states only by comparing arrays"""
         if not isinstance(other, self.__class__):
             return NotImplemented
         else:

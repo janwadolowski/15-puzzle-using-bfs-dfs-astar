@@ -62,7 +62,7 @@ class AStar(BaseAlgorithm):
             self.open_list.pop(tmp_key)
 
             # Get neighbors for State
-            neighbors: List[State] = tmp_state.get_neighbors("LRUD")
+            neighbors: List[State] = tmp_state.get_neighbors()
 
             # Add tmp_state to closed_list after checking neighbors
             self.closed_list[tmp_key] = tmp_state

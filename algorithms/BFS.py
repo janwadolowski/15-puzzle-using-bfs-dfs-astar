@@ -38,18 +38,21 @@ class BFS(BaseAlgorithm):
         if state.is_target_state():
             logger.info("Initial State is target State. Returning [].")
             return state.get_path_to_state()
+        # else add state to open list / frontier
         else:
             self.frontier.append(state)
             logger.debug(f"Added initial State to the frontier:\n{str(state)}.")
 
-            while self.frontier:  # == while not empty (empty deque is a falsy value)
+            # loop until open list is empty
+            while self.frontier:  # empty deque evaluates to False
                 logger.debug(f"Frontier not empty, {len(self.frontier)} elements.")
 
+                # take a state out from open list in FIFO order
                 examined_state = self.frontier.popleft()
                 logger.debug(
                     f"Popped first element from the deque:\n{str(examined_state)}"
                 )
-
+                # add that state to closed list
                 self.closed_list[hash(examined_state)] = examined_state
                 logger.debug(
                     f"Added examined_state to the closed_list:\n{hash(examined_state)}: {str(examined_state)}"
@@ -58,6 +61,7 @@ class BFS(BaseAlgorithm):
                 logger.debug(
                     f"State examined. Fetching neighbors:\n{examined_state.get_neighbors(self.neighbors_query_order)}"
                 )
+                # examine all neighbors checking if they are target state
                 for neighbor in examined_state.get_neighbors(
                     self.neighbors_query_order
                 ):
