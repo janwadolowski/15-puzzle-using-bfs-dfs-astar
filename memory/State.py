@@ -13,7 +13,7 @@ from Exception import InvalidCoordinatesException
 class State:
     state: np.ndarray
     parent: Optional["State"] = None
-    preceding_operator: str = None
+    preceding_operator: Optional[str] = None
 
     @staticmethod
     def load_state(filepath: str) -> np.array:
@@ -70,9 +70,11 @@ class State:
         zero_coords: Tuple[int, int] = self._find_zero()
         summed: Tuple[int, int] = self._sum_tuples(zero_coords, change)
 
-        if summed[0] < 0 or summed[0] > self.state.shape[0]:
+        rows_len, columns_len = self.state.shape
+
+        if summed[0] < 0 or summed[0] >= columns_len:
             return False
-        elif summed[1] < 0 or summed[1] > self.state.shape[1]:
+        elif summed[1] < 0 or summed[1] >= rows_len:
             return False
         else:
             return True
