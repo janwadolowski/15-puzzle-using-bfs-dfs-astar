@@ -98,7 +98,7 @@ class State:
             return swapped
 
     def _move(self, direction: str) -> Optional["State"]:
-        direction_coords = None
+        direction_coords: tuple[int, int] | None = None
         match direction:
             case "up":
                 direction_coords = (-1, 0)
