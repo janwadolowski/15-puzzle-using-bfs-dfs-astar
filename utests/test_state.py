@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 import pytest
 from pytest_mock import MockerFixture
@@ -173,10 +175,177 @@ class TestState:
         move_patch.assert_called_once_with("right")
         assert new_state == new_state_mocked
 
-    def test__check_legal_move(
-        self, state_top_right_corner: State, state_bottom_left_corner: State
-    ):
-        pass
+    # All coords changes combinations with expected test results for top right corner 0 and bottom left corner 0
+    testdata_top_right_corner = [
+        ((0, 3), (1, 0), (1, 3), True),  # Movement down
+        ((0, 3), (0, 1), (0, 4), False),  # Movement right
+        ((0, 3), (-1, 0), (-1, 3), False),  # Movement up
+        ((0, 3), (0, -1), (0, 2), True),  # Movement left
+    ]
 
-    def test__move(self):
-        pass
+    @pytest.mark.parametrize(
+        "mocked_zero_coords, change, mocked_sum, expected", testdata_top_right_corner
+    )
+    def test__check_legal_move_top_right_corner(
+        self,
+        state_top_right_corner: State,
+        mocker: MockerFixture,
+        mocked_zero_coords,
+        change,
+        mocked_sum,
+        expected,
+    ):
+        # Mocks
+        find_zero_patch = mocker.patch(
+            target="memory.State.State._find_zero", return_value=mocked_zero_coords
+        )
+        sum_tuples_patch = mocker.patch(
+            target="memory.State.State._sum_tuples", return_value=mocked_sum
+        )
+        result = state_top_right_corner._check_legal_move(change)
+
+        # Assertions
+        find_zero_patch.assert_called_once()
+        sum_tuples_patch.assert_called_once_with(mocked_zero_coords, change)
+        assert result == expected
+
+    testdata_bottom_left_corner = [
+        ((3, 0), (1, 0), (4, 0), False),  # Movement down
+        ((3, 0), (0, 1), (3, 1), True),  # Movement right
+        ((3, 0), (-1, 0), (2, 0), True),  # Movement up
+        ((3, 0), (0, -1), (3, -1), False),  # Movement left
+    ]
+
+    @pytest.mark.parametrize(
+        "mocked_zero_coords, change, mocked_sum, expected", testdata_bottom_left_corner
+    )
+    def test__check_legal_move_bottom_left_corner(
+        self,
+        state_bottom_left_corner: State,
+        mocker: MockerFixture,
+        mocked_zero_coords,
+        change,
+        mocked_sum,
+        expected,
+    ):
+        # Mocks
+        find_zero_patch = mocker.patch(
+            target="memory.State.State._find_zero", return_value=mocked_zero_coords
+        )
+        sum_tuples_patch = mocker.patch(
+            target="memory.State.State._sum_tuples", return_value=mocked_sum
+        )
+        result = state_bottom_left_corner._check_legal_move(change)
+
+        # Assertions
+        find_zero_patch.assert_called_once()
+        sum_tuples_patch.assert_called_once_with(mocked_zero_coords, change)
+        assert result == expected
+
+    directions_and_coords = [
+        (
+            "up",
+            (-1, 0),
+            (1, 1),
+            np.array([[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]),
+        ),
+        (
+            "down",
+            (1, 0),
+            (3, 1),
+            np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 14, 11, 12], [13, 0, 15, 10]]),
+        ),
+        (
+            "left",
+            (0, -1),
+            (2, 0),
+            np.array([[1, 2, 3, 4], [5, 6, 7, 8], [0, 9, 11, 12], [13, 14, 15, 10]]),
+        ),
+        (
+            "right",
+            (0, 1),
+            (2, 2),
+            np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]]),
+        ),
+    ]
+
+    @pytest.mark.parametrize(
+        "direction, direction_coords, new_coords, swapped_array", directions_and_coords
+    )
+    def test__move_legal(
+        self,
+        create_state: State,
+        mocker: MockerFixture,
+        direction: str,
+        direction_coords: Tuple[int, int],
+        new_coords: Tuple[int, int],
+        swapped_array: np.ndarray,
+    ):
+        # Mocks
+        swapped_state = State(
+            state=swapped_array, parent=create_state, preceding_operator=direction
+        )
+        check_legal_move_patch = mocker.patch(
+            target="memory.State.State._check_legal_move", return_value=True
+        )
+        find_zero_patch = mocker.patch(
+            target="memory.State.State._find_zero", return_value=(2, 1)
+        )
+        swap_values_patch = mocker.patch(
+            target="memory.State.State._swap_values", return_value=swapped_array
+        )
+
+        new_state: State = create_state._move(direction)
+
+        # Assertions
+        check_legal_move_patch.assert_called_once_with(direction_coords)
+        find_zero_patch.assert_called_once()
+        swap_values_patch.assert_called_once_with(new_coords)
+        assert new_state == swapped_state
+
+    directions_and_coords = [
+        ("down", (1, 0), (3, 1)),
+        ("left", (0, -1), (2, 0)),
+    ]
+
+    @pytest.mark.parametrize(
+        "direction, direction_coords, new_coords", directions_and_coords
+    )
+    def test__move_illegal(
+        self,
+        state_bottom_left_corner: State,
+        mocker: MockerFixture,
+        direction: str,
+        direction_coords: Tuple[int, int],
+        new_coords: Tuple[int, int],
+    ):
+        # Mocks
+        check_legal_move_patch = mocker.patch(
+            target="memory.State.State._check_legal_move", return_value=False
+        )
+        sum_tuples_patch = mocker.patch(target="memory.State.State._sum_tuples")
+        find_zero_patch = mocker.patch(target="memory.State.State._find_zero")
+        swap_values_patch = mocker.patch(target="memory.State.State._swap_values")
+
+        new_state: State = state_bottom_left_corner._move(direction)
+
+        # Assertions
+        check_legal_move_patch.assert_called_once_with(direction_coords)
+        sum_tuples_patch.assert_not_called()
+        find_zero_patch.assert_not_called()
+        swap_values_patch.assert_not_called()
+        assert new_state is None
+
+    adding_tuples = [
+        ((2, 3), (0, 1), (2, 4)),
+        ((3, 1), (1, 0), (4, 1)),
+        ((2, 2), (0, -1), (2, 1)),
+        ((1, 1), (-1, 0), (0, 1)),
+        ((3, 3), (1, -2), (4, 1)),
+    ]
+
+    @pytest.mark.parametrize("first, second, expected", adding_tuples)
+    def test__sum_tuples(
+        self, first: Tuple[int, int], second: Tuple[int, int], expected: Tuple[int, int]
+    ):
+        assert State._sum_tuples(first, second) == expected
