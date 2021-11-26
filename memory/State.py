@@ -1,7 +1,7 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, ClassVar, Dict
 
 # noinspection Mypy
 import numpy as np
@@ -14,6 +14,8 @@ class State:
     state: np.ndarray
     parent: Optional["State"] = None
     preceding_operator: Optional[str] = None
+    frontier: ClassVar[List["State"]] = field(default=[])
+    closed: ClassVar[Dict["State", List["State"]]] = field(default={})
 
     @staticmethod
     def load_state(filepath: str) -> np.array:
