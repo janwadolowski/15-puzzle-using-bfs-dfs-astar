@@ -349,3 +349,19 @@ class TestState:
         self, first: Tuple[int, int], second: Tuple[int, int], expected: Tuple[int, int]
     ):
         assert State._sum_tuples(first, second) == expected
+
+    def test_get_available_moves(
+        self,
+        create_state: State,
+        state_bottom_left_corner: State,
+        state_top_right_corner: State,
+        mocker: MockerFixture,
+    ):
+        move_patch = mocker.patch(
+            target="memory.State.State._move", return_value=None
+        )
+        assert create_state.get_available_moves() == [State(state=np.array([[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]))]
+
+
+        # TODO: Write a test
+        pass

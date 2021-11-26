@@ -127,3 +127,11 @@ class State:
         else:
             logging.debug(f"_move")
             return None
+
+    def get_available_moves(self) -> List["State"]:
+        available_moves: List[State] = []
+        zero: Tuple[int, int] = self._find_zero()
+        for move in [self.up, self.down, self.left, self.right]:
+            if available := move():
+                available_moves.append(available)
+        return available_moves
