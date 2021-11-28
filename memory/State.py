@@ -131,7 +131,16 @@ class State:
     def get_available_moves(self) -> List["State"]:
         available_moves: List[State] = []
         zero: Tuple[int, int] = self._find_zero()
-        for move in [self.up, self.down, self.left, self.right]:
+        for move in [self.left, self.right, self.up, self.down]:
             if available := move():
                 available_moves.append(available)
         return available_moves
+
+    def is_target_state(self, other: "State") -> bool:
+        return self == other
+
+    def __eq__(self, other: "State"):
+        if isinstance(other, self.__class__) and (self.state == other.state).all():
+            return True
+        else:
+            return False

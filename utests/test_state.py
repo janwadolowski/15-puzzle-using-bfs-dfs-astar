@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 
 import numpy as np
 import pytest
@@ -11,9 +11,18 @@ class TestState:
     EXAMPLE_FRAME_PATH: str = "./Resources/ramka1_4x4.txt"
 
     @pytest.fixture
-    def create_state(self):
+    def some_state(self):
         example_state: State = State(
-            np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 0, 11, 12], [13, 14, 15, 10]])
+            state=np.array(
+                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 0, 11, 12], [13, 14, 15, 10]]
+            )
+        )
+        yield example_state
+
+    @pytest.fixture
+    def target_state(self):
+        example_state: State = State(
+            np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]])
         )
         yield example_state
 
@@ -58,28 +67,28 @@ class TestState:
         assert type(test_state) is np.ndarray
         assert test_state.shape == (4, 4)
 
-    def test_get_state_shape(self, create_state: State):
-        test_state_shape = create_state.get_state_shape()
+    def test_get_state_shape(self, some_state):
+        test_state_shape = some_state.get_state_shape()
         assert type(test_state_shape) is tuple
         assert test_state_shape == (4, 4)
 
-    def test__find_zero(self, create_state: State):
-        test_state_index = create_state._find_zero()
+    def test__find_zero(self, some_state):
+        test_state_index = some_state._find_zero()
         assert type(test_state_index) is tuple
         assert test_state_index == (2, 1)
 
-    def test__swap_values(self, create_state: State):
+    def test__swap_values(self, some_state):
         # [[1, 2, 3, 4],           [[1, 2, 3, 4],
         #  [5, 6, 7, 8],      =>    [5, 6, 7, 8],
         #  [9, 0, 11, 12],          [9, 11, 0, 12],
         #  [13, 14, 15, 10]]        [13, 14, 15, 10]]
-        new_state_array = create_state._swap_values((2, 2))
+        new_state_array = some_state._swap_values((2, 2))
         assert (
             new_state_array
             == np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]])
         ).all()
 
-    def test_up(self, create_state: State, mocker: MockerFixture):
+    def test_up(self, some_state, mocker: MockerFixture):
         # [[1, 2, 3, 4],           [[1, 2, 3, 4],
         #  [5, 6, 7, 8],      =>    [5, 0, 7, 8],
         #  [9, 0, 11, 12],          [9, 6, 11, 12],
@@ -90,20 +99,20 @@ class TestState:
             state=np.array(
                 [[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]
             ),
-            parent=create_state,
+            parent=some_state,
             preceding_operator="up",
         )
         move_patch = mocker.patch(
             target="memory.State.State._move", return_value=new_state_mocked
         )
 
-        new_state = create_state.up()
+        new_state = some_state.up()
 
         # Assertions
         move_patch.assert_called_once_with("up")
         assert new_state == new_state_mocked
 
-    def test_down(self, create_state: State, mocker: MockerFixture):
+    def test_down(self, some_state, mocker: MockerFixture):
         # [[1, 2, 3, 4],           [[1, 2, 3, 4],
         #  [5, 6, 7, 8],      =>    [5, 6, 7, 8],
         #  [9, 0, 11, 12],          [9, 14, 11, 12],
@@ -114,20 +123,20 @@ class TestState:
             state=np.array(
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 14, 11, 12], [13, 0, 15, 10]]
             ),
-            parent=create_state,
+            parent=some_state,
             preceding_operator="down",
         )
         move_patch = mocker.patch(
             target="memory.State.State._move", return_value=new_state_mocked
         )
 
-        new_state = create_state.down()
+        new_state = some_state.down()
 
         # Assertions
         move_patch.assert_called_once_with("down")
         assert new_state == new_state_mocked
 
-    def test_left(self, create_state: State, mocker: MockerFixture):
+    def test_left(self, some_state, mocker: MockerFixture):
         # [[1, 2, 3, 4],           [[1, 2, 3, 4],
         #  [5, 6, 7, 8],      =>    [5, 6, 7, 8],
         #  [9, 0, 11, 12],          [0, 9, 11, 12],
@@ -138,20 +147,20 @@ class TestState:
             state=np.array(
                 [[1, 2, 3, 4], [5, 6, 7, 8], [0, 9, 11, 12], [13, 14, 15, 10]]
             ),
-            parent=create_state,
+            parent=some_state,
             preceding_operator="left",
         )
         move_patch = mocker.patch(
             target="memory.State.State._move", return_value=new_state_mocked
         )
 
-        new_state = create_state.left()
+        new_state = some_state.left()
 
         # Assertions
         move_patch.assert_called_once_with("left")
         assert new_state == new_state_mocked
 
-    def test_right(self, create_state: State, mocker: MockerFixture):
+    def test_right(self, some_state, mocker: MockerFixture):
         # [[1, 2, 3, 4],           [[1, 2, 3, 4],
         #  [5, 6, 7, 8],      =>    [5, 6, 7, 8],
         #  [9, 0, 11, 12],          [9, 11, 0, 12],
@@ -162,14 +171,14 @@ class TestState:
             state=np.array(
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]]
             ),
-            parent=create_state,
+            parent=some_state,
             preceding_operator="right",
         )
         move_patch = mocker.patch(
             target="memory.State.State._move", return_value=new_state_mocked
         )
 
-        new_state = create_state.right()
+        new_state = some_state.right()
 
         # Assertions
         move_patch.assert_called_once_with("right")
@@ -274,7 +283,7 @@ class TestState:
     )
     def test__move_legal(
         self,
-        create_state: State,
+        some_state,
         mocker: MockerFixture,
         direction: str,
         direction_coords: Tuple[int, int],
@@ -283,7 +292,7 @@ class TestState:
     ):
         # Mocks
         swapped_state = State(
-            state=swapped_array, parent=create_state, preceding_operator=direction
+            state=swapped_array, parent=some_state, preceding_operator=direction
         )
         check_legal_move_patch = mocker.patch(
             target="memory.State.State._check_legal_move", return_value=True
@@ -295,7 +304,7 @@ class TestState:
             target="memory.State.State._swap_values", return_value=swapped_array
         )
 
-        new_state: State = create_state._move(direction)
+        new_state: State = some_state._move(direction)
 
         # Assertions
         check_legal_move_patch.assert_called_once_with(direction_coords)
@@ -351,17 +360,46 @@ class TestState:
         assert State._sum_tuples(first, second) == expected
 
     def test_get_available_moves(
-        self,
-        create_state: State,
-        state_bottom_left_corner: State,
-        state_top_right_corner: State,
-        mocker: MockerFixture,
+        self, state_bottom_left_corner: State, mocker: MockerFixture
     ):
-        move_patch = mocker.patch(
-            target="memory.State.State._move", return_value=None
+        # Mocks
+        available_neighbors = {
+            "left": None,
+            "right": State(
+                np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [14, 0, 15, 13]])
+            ),
+            "up": State(
+                np.array([[1, 2, 3, 4], [5, 6, 7, 8], [0, 10, 11, 12], [9, 14, 15, 13]])
+            ),
+            "down": None,
+        }
+        patch_left = mocker.patch(
+            target="memory.State.State.left", return_value=available_neighbors["left"]
         )
-        assert create_state.get_available_moves() == [State(state=np.array([[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]))]
+        patch_right = mocker.patch(
+            target="memory.State.State.right", return_value=available_neighbors["right"]
+        )
+        patch_up = mocker.patch(
+            target="memory.State.State.up", return_value=available_neighbors["up"]
+        )
+        patch_down = mocker.patch(
+            target="memory.State.State.down", return_value=available_neighbors["down"]
+        )
+        neighbors: List[State] = state_bottom_left_corner.get_available_moves()
 
+        assert neighbors == [x for x in available_neighbors.values() if x is not None]
+        patch_left.assert_called_once()
+        patch_right.assert_called_once()
+        patch_up.assert_called_once()
+        patch_down.assert_called_once()
 
-        # TODO: Write a test
-        pass
+    def test_is_target_state(self, target_state, some_state):
+        also_target_state = State(
+            state=np.array(
+                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
+            ),
+            parent=some_state,
+            preceding_operator="up",
+        )
+        assert target_state != some_state
+        assert target_state == also_target_state
