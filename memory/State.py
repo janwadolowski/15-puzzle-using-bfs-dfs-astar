@@ -14,8 +14,6 @@ class State:
     state: np.ndarray
     parent: Optional["State"] = None
     preceding_operator: Optional[str] = None
-    frontier: ClassVar[List["State"]] = field(default=[])
-    closed: ClassVar[Dict["State", List["State"]]] = field(default={})
 
     @staticmethod
     def load_state(filepath: str) -> np.array:
