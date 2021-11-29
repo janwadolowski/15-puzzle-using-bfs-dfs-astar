@@ -1,7 +1,7 @@
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, List, Tuple, ClassVar, Dict
+from typing import Optional, List, Tuple, Final
 
 # noinspection Mypy
 import numpy as np
@@ -118,7 +118,8 @@ class State:
             )
             new_state_array: np.ndarray = self._swap_values(new_coords)
             logging.debug(
-                f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array={new_state_array}")
+                f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array={new_state_array}"
+            )
             return State(
                 state=new_state_array, parent=self, preceding_operator=direction
             )
@@ -126,9 +127,8 @@ class State:
             logging.debug(f"_move")
             return None
 
-    def get_available_moves(self) -> List["State"]:
+    def get_neighbors(self) -> List["State"]:
         available_moves: List[State] = []
-        zero: Tuple[int, int] = self._find_zero()
         for move in [self.left, self.right, self.up, self.down]:
             if available := move():
                 available_moves.append(available)
@@ -149,6 +149,7 @@ class State:
             return False
 
     def __deepcopy__(self) -> "State":
+        # TODO do we need this?
         """
         Method to deep copy an object.
 
