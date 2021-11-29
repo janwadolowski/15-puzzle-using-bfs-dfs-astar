@@ -148,7 +148,7 @@ class State:
         else:
             return False
 
-    def __deepcopy__(self) -> "State":
+    def __deepcopy__(self, memo=None) -> "State":
         # TODO do we need this?
         """
         Method to deep copy an object.
@@ -159,6 +159,8 @@ class State:
 
         :return: A deep copy of an object with referenced parent state
         """
+        if not memo:
+            memo = {}
         return State(
             state=self.state.copy(),
             parent=self.parent,  # This in only referenced, not copied

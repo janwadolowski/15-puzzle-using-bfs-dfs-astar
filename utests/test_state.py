@@ -1,3 +1,4 @@
+import copy
 from typing import Tuple, List
 
 import numpy as np
@@ -385,7 +386,7 @@ class TestState:
         patch_down = mocker.patch(
             target="memory.State.State.down", return_value=available_neighbors["down"]
         )
-        neighbors: List[State] = state_bottom_left_corner.get_available_moves()
+        neighbors: List[State] = state_bottom_left_corner.get_neighbors()
 
         assert neighbors == [x for x in available_neighbors.values() if x is not None]
         patch_left.assert_called_once()
@@ -403,3 +404,9 @@ class TestState:
         )
         assert target_state != some_state
         assert target_state == also_target_state
+
+    def test_deepcopy(self, some_state):
+        deepcopy = copy.deepcopy(some_state)
+        assert (some_state.state == deepcopy.state).all()
+        assert some_state.preceding_operator == deepcopy.preceding_operator
+        assert some_state.parent is deepcopy.parent
