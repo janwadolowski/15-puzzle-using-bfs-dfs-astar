@@ -142,3 +142,19 @@ class State:
             return True
         else:
             return False
+
+    def __deepcopy__(self) -> "State":
+        """
+        Method to deep copy an object.
+
+        It's not a full deep copy as for the purpose of the algorithm
+        we only need to deep copy the state (numpy.ndarray)
+        but we can only reference the parent state.
+
+        :return: A deep copy of an object with referenced parent state
+        """
+        return State(
+            state=self.state.copy(),
+            parent=self.parent,  # This in only referenced, not copied
+            preceding_operator=self.preceding_operator,
+        )
