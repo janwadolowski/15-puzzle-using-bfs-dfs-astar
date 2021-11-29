@@ -134,8 +134,13 @@ class State:
                 available_moves.append(available)
         return available_moves
 
-    def is_target_state(self, other: "State") -> bool:
-        return self == other
+    def is_target_state(self) -> bool:
+        target_state: Final = State(
+            state=np.array(
+                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
+            )
+        )
+        return self == target_state
 
     def __eq__(self, other: "State"):
         if isinstance(other, self.__class__) and (self.state == other.state).all():
