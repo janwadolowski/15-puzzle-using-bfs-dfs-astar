@@ -23,6 +23,6 @@ class BaseAlgorithm(ABC):
 
     @staticmethod
     @abstractmethod
-    def visualize_solution(self) -> Any:
+    def visualize_solution() -> Any:
         # TODO: maybe
         pass

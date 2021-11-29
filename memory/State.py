@@ -142,6 +142,16 @@ class State:
         )
         return self == target_state
 
+    def get_path_to_state(self) -> List[str]:
+        """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
+        path_to_state: List[str] = []
+        if not self.parent:
+            path_to_state.reverse()  # Because moves are listed last to first and we want first to last
+            return path_to_state
+        else:
+            path_to_state.append(self.preceding_operator)
+            return self.parent.get_path_to_state()
+
     def __eq__(self, other: "State"):
         if isinstance(other, self.__class__) and (self.state == other.state).all():
             return True
@@ -159,6 +169,7 @@ class State:
 
         :return: A deep copy of an object with referenced parent state
         """
+        # TODO: how to handle memo properly?
         if not memo:
             memo = {}
         return State(
