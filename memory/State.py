@@ -16,7 +16,14 @@ class State:
     preceding_operator: Optional[str] = None
 
     @staticmethod
-    def load_state(filepath: str) -> np.array:
+    def load_state(filepath: str) -> Optional["State"]:
+        """
+        Load initial state for 15 puzzle from a file.
+
+        :param filepath:
+        :return: A loaded state or None if the operation failed.
+        """
+        # TODO: Add :raise <Exception>: docstring
         filepath_ = Path(filepath)
         try:
             with open(filepath_, "r") as f:
