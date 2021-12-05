@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, List, Tuple, Final
+from typing import Optional, List, Tuple, Final, Literal, cast
 
 # noinspection Mypy
 import numpy as np
@@ -73,6 +73,18 @@ class State:
         """Defines operation: (a, b) + (c, d) = (a+b, c+d)"""
         return first[0] + second[0], first[1] + second[1]
 
+    @staticmethod
+    def _diff_tuples(
+        first: Tuple[int, int], second: Tuple[int, int]
+    ) -> Tuple[int, int]:
+        """
+        Calculates difference in coordinates between two tuples as a tuple with coordinates distance like so:
+        (a, b), (c, d) -> ( abs(c-a), abs(d-b) )
+
+        _diff_tuples( (2, 3), (1, 1) ) -> (1, 2)
+        """
+        return abs(first[1] - first[0]), second[1] - second[0]
+
     def _check_legal_move(self, change: Tuple[int, int]) -> bool:
         """Returns True if the operation up | down | left | right is valid else False"""
         zero_coords: Tuple[int, int] = self._find_zero()
@@ -134,9 +146,7 @@ class State:
             logging.debug(
                 f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array={new_state_array}"
             )
-            return State(
-                state=new_state_array, parent=self, preceding_operator=direction
-            )
+            return State(state=new_state_array, parent=self)
         else:
             logging.debug(f"_move")
             return None
@@ -156,7 +166,14 @@ class State:
         )
         return self == target_state
 
-    def get_path_to_state(self) -> List[str]:
+    def _infer_preceding_operator(self) -> DIRECTIONS_ENUM | None:
+        counterparts = {"left": "right", "right": "left", "up": "down", "down": "up"}
+        for direction in self.DIRECTIONS_LIST:
+            if self._move(cast(self.DIRECTIONS_ENUM, direction)) == self.parent:
+                # if self._move(direction) == self.parent:
+                return counterparts["direction"]
+
+    def get_path_to_state(self) -> List[DIRECTIONS_ENUM]:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
         path_to_state: List[State.DIRECTIONS_ENUM] = []
         if (
@@ -165,7 +182,7 @@ class State:
             path_to_state.reverse()  # Because moves are listed last to first and we want first to last
             return path_to_state
         else:
-            path_to_state.append(self.preceding_operator)
+            path_to_state.append(self._infer_preceding_operator())
             return self.parent.get_path_to_state()
 
     def __eq__(self, other: "State"):
