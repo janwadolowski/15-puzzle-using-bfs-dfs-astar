@@ -25,7 +25,7 @@ class BFS(BaseAlgorithm, ABC):
         """
         tmp_state: State = state
         while not tmp_state.is_target_state():
-            # Add a the current node to frontier
+            # Add the current node to frontier
             BFS.frontier.append(tmp_state)
             # Get a list of all neighbors for the current node
             neighbors: List[State] = tmp_state.get_neighbors()
@@ -43,7 +43,7 @@ class BFS(BaseAlgorithm, ABC):
                 else:
                     BFS.closed_list.append(tmp_state)
                     BFS.frontier.pop(tmp_state)
-            tmp_state = BFS.frontier()
+            tmp_state = BFS.frontier(__index=0)
 
     @staticmethod
     def visualize_solution() -> Any:
