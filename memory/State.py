@@ -13,7 +13,8 @@ from Exception import InvalidCoordinatesException
 class State:
     state: np.ndarray
     parent: Optional["State"] = None
-    preceding_operator: Optional[str] = None
+    DIRECTIONS_LIST: Final = ("left", "right", "up", "down")
+    DIRECTIONS_ENUM: Final = Literal["left", "right", "up", "down"]
 
     @staticmethod
     def load_state(filepath: str) -> Optional["State"]:
@@ -38,7 +39,7 @@ class State:
                 # [[ '5',  '6',  '7',  '8'],
                 #  [ '9', '10', '11', '12'],
                 #  ['13', '14', '15',  '0']]
-                return np.array(output_list_str)
+                return State(state=np.array(output_list_str), parent=None)
         except Exception as e:
             logging.error(e)
             raise e
@@ -106,17 +107,23 @@ class State:
             swapped[a], swapped[b] = swapped[b], swapped[a]
             return swapped
 
-    def _move(self, direction: str) -> Optional["State"]:
+    def _move(self, direction: DIRECTIONS_ENUM) -> Optional["State"]:
+        """
+        Return a new State with 0 moved in a direction passed as parameter. If move is not possible return None.
+
+        :param direction: one of: "left" | "right" | "up" | "down"
+        :return: new State with zero moved in a specified direction or None if a move is illegal.
+        """
         direction_coords: tuple[int, int] | None = None
         match direction:
-            case "up":
-                direction_coords = (-1, 0)
-            case "down":
-                direction_coords = (1, 0)
             case "left":
                 direction_coords = (0, -1)
             case "right":
                 direction_coords = (0, 1)
+            case "up":
+                direction_coords = (-1, 0)
+            case "down":
+                direction_coords = (1, 0)
 
         # If valid direction and the move is legal (within the state array boundaries) proceed
         if direction_coords and self._check_legal_move(direction_coords):
@@ -151,8 +158,10 @@ class State:
 
     def get_path_to_state(self) -> List[str]:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
-        path_to_state: List[str] = []
-        if not self.parent:
+        path_to_state: List[State.DIRECTIONS_ENUM] = []
+        if (
+            not self.parent
+        ):  # If node doesn't have a parent it means it's the parent node (end of recursion)
             path_to_state.reverse()  # Because moves are listed last to first and we want first to last
             return path_to_state
         else:
