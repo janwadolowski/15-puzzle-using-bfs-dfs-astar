@@ -191,22 +191,21 @@ class State:
         else:
             return False
 
-    def __deepcopy__(self, memo=None) -> "State":
-        # TODO do we need this?
-        """
-        Method to deep copy an object.
-
-        It's not a full deep copy as for the purpose of the algorithm
-        we only need to deep copy the state (numpy.ndarray)
-        but we can only reference the parent state.
-
-        :return: A deep copy of an object with referenced parent state
-        """
-        # TODO: how to handle memo properly?
-        if not memo:
-            memo = {}
-        return State(
-            state=self.state.copy(),
-            parent=self.parent,  # This in only referenced, not copied
-            preceding_operator=self.preceding_operator,
-        )
+    # def __deepcopy__(self, memo=None) -> "State":
+    #     # TODO do we need this?
+    #     """
+    #     Method to deep copy an object.
+    #
+    #     It's not a full deep copy as for the purpose of the algorithm
+    #     we only need to deep copy the state (numpy.ndarray)
+    #     but we can only reference the parent state.
+    #
+    #     :return: A deep copy of an object with referenced parent state
+    #     """
+    #     # TODO: how to handle memo properly?
+    #     if not memo:
+    #         memo = {}
+    #     return State(
+    #         state=self.state.copy(),
+    #         parent=self.parent,  # This in only referenced, not copied
+    #     )
