@@ -1,4 +1,3 @@
-import copy
 from typing import Tuple, List
 
 import numpy as np
@@ -52,21 +51,18 @@ class TestState:
         test_state = State(
             state=child_array,
             parent=test_parent_state,
-            preceding_operator="down",
         )
 
         assert (test_parent_state.state == parent_array).all()
-        assert test_parent_state.preceding_operator is None
         assert test_parent_state.parent is None
 
         assert (test_state.state == child_array).all()
-        assert test_state.preceding_operator == "down"
         assert test_state.parent is test_parent_state
 
     def test_load_state(self):
         test_state = State.load_state(self.EXAMPLE_FRAME_PATH)
-        assert type(test_state) is np.ndarray
-        assert test_state.shape == (4, 4)
+        assert type(test_state) is State
+        assert test_state.state.shape == (4, 4)
 
     def test_get_state_shape(self, some_state):
         test_state_shape = some_state.get_state_shape()
@@ -101,7 +97,6 @@ class TestState:
                 [[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]
             ),
             parent=some_state,
-            preceding_operator="up",
         )
         move_patch = mocker.patch(
             target="memory.State.State._move", return_value=new_state_mocked
@@ -125,7 +120,6 @@ class TestState:
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 14, 11, 12], [13, 0, 15, 10]]
             ),
             parent=some_state,
-            preceding_operator="down",
         )
         move_patch = mocker.patch(
             target="memory.State.State._move", return_value=new_state_mocked
@@ -149,7 +143,6 @@ class TestState:
                 [[1, 2, 3, 4], [5, 6, 7, 8], [0, 9, 11, 12], [13, 14, 15, 10]]
             ),
             parent=some_state,
-            preceding_operator="left",
         )
         move_patch = mocker.patch(
             target="memory.State.State._move", return_value=new_state_mocked
@@ -173,7 +166,6 @@ class TestState:
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]]
             ),
             parent=some_state,
-            preceding_operator="right",
         )
         move_patch = mocker.patch(
             target="memory.State.State._move", return_value=new_state_mocked
@@ -292,9 +284,7 @@ class TestState:
         swapped_array: np.ndarray,
     ):
         # Mocks
-        swapped_state = State(
-            state=swapped_array, parent=some_state, preceding_operator=direction
-        )
+        swapped_state = State(state=swapped_array, parent=some_state)
         check_legal_move_patch = mocker.patch(
             target="memory.State.State._check_legal_move", return_value=True
         )
@@ -400,7 +390,6 @@ class TestState:
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
             ),
             parent=some_state,
-            preceding_operator="up",
         )
         assert target_state != some_state
         assert target_state == also_target_state
