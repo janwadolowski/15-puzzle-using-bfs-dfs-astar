@@ -1,3 +1,4 @@
+import copy
 from abc import ABC
 from typing import Any, List
 
@@ -9,7 +10,7 @@ class BFS(BaseAlgorithm, ABC):
     """A container class for methods and variables connected with Breadth First Search algorithm. Not meant to be instantiated."""
 
     @staticmethod
-    def solve(state: State) -> List[str]:
+    def solve(state: State) -> List[State.DIRECTIONS_ENUM]:
         # TODO: verify
         """
         Steps of the algorithm:
@@ -37,13 +38,14 @@ class BFS(BaseAlgorithm, ABC):
             for neighbor in neighbors:
                 if neighbor.is_target_state():
                     return neighbor.get_path_to_state()
-                # If none of the neighbors is the target:
-                # - add the current state to the closed list to avoid revisiting it
-                # - remove it from the frontier
-                else:
-                    BFS.closed_list.append(tmp_state)
-                    BFS.frontier.pop(tmp_state)
-            tmp_state = BFS.frontier(__index=0)
+
+            # If none of the neighbors is the target:
+            # - add the current state to the closed list to avoid revisiting it
+            # - remove it from the frontier
+            BFS.closed_list.add(copy.deepcopy(tmp_state))
+            BFS.frontier.remove(tmp_state)
+            tmp_state = BFS.frontier[0]
+        return tmp_state.get_path_to_state()
 
     @staticmethod
     def visualize_solution() -> Any:
