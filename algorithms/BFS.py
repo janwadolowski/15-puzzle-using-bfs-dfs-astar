@@ -24,6 +24,9 @@ class BFS(BaseAlgorithm, ABC):
         :param state: A starting state of the puzzle
         :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle
         """
+        if state.is_target_state():
+            return state.get_path_to_state()
+
         tmp_state: State = state
         while not tmp_state.is_target_state():
             # Add the current node to frontier

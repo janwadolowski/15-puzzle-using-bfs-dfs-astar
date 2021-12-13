@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, List, Tuple, Final, Literal, cast
+from typing import Optional, List, Tuple, Final, Literal
 
 # noinspection Mypy
 import numpy as np
@@ -15,6 +15,7 @@ class State:
     parent: Optional["State"] = None
     DIRECTIONS_LIST: Final = ("left", "right", "up", "down")
     DIRECTIONS_ENUM: Final = Literal["left", "right", "up", "down"]
+    preceding_operator: Optional[DIRECTIONS_ENUM] = None
 
     @staticmethod
     def load_state(filepath: str) -> Optional["State"]:
@@ -166,13 +167,6 @@ class State:
         )
         return self == target_state
 
-    def _infer_preceding_operator(self) -> DIRECTIONS_ENUM | None:
-        counterparts = {"left": "right", "right": "left", "up": "down", "down": "up"}
-        for direction in self.DIRECTIONS_LIST:
-            if self._move(cast(self.DIRECTIONS_ENUM, direction)) == self.parent:
-                # if self._move(direction) == self.parent:
-                return counterparts["direction"]
-
     def get_path_to_state(self) -> List[DIRECTIONS_ENUM]:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
         path_to_state: List[State.DIRECTIONS_ENUM] = []
@@ -182,16 +176,16 @@ class State:
             path_to_state.reverse()  # Because moves are listed last to first and we want first to last
             return path_to_state
         else:
-            path_to_state.append(self._infer_preceding_operator())
+            path_to_state.append(self.preceding_operator)
             return self.parent.get_path_to_state()
 
-    def __eq__(self, other: "State"):
+    def __eq__(self, other: "State") -> bool:
         if isinstance(other, self.__class__) and (self.state == other.state).all():
             return True
         else:
             return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.state.tobytes())
 
     def __deepcopy__(self, memo=None) -> "State":

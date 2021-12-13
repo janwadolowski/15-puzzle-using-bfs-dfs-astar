@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import ClassVar, List, Any, Set
+from queue import Queue
+from typing import ClassVar, List, Any
 
 from memory.State import State
 
@@ -8,7 +9,8 @@ from memory.State import State
 @dataclass
 class BaseAlgorithm(ABC):
     frontier: ClassVar[List[State]] = field(default=[])
-    closed_list: ClassVar[Set[State]] = field(default=set())
+    closed_list: [Queue[State]] = field(default=Queue(maxsize=0))
+    neighbors_query_order:
 
     @staticmethod
     @abstractmethod
