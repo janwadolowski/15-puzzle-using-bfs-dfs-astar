@@ -149,7 +149,9 @@ class State:
             )
             return State(state=new_state_array, parent=self)
         else:
-            logging.debug(f"DEBUG: attempted move from coords: {self._find_zero()} in illegal direction: {direction}.")
+            logging.debug(
+                f"DEBUG: attempted move from coords: {self._find_zero()} in illegal direction: {direction}."
+            )
             return None
 
     def get_neighbors(self) -> List["State"]:
