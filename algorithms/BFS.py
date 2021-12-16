@@ -8,7 +8,7 @@ from memory.State import State
 class BFS(BaseAlgorithm):
     """A container class for methods and variables connected with Breadth First Search algorithm. Not meant to be instantiated."""
 
-    def solve(self, state: State) -> Optional[List[State.DIRECTIONS_ENUM]]:
+    def solve(self, state: State) -> Optional[str]:
         # TODO: verify
         """
         Steps of the algorithm:

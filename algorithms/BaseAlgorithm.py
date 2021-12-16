@@ -13,7 +13,7 @@ class BaseAlgorithm(ABC):
 
     @staticmethod
     @abstractmethod
-    def solve(state: State) -> List[str]:
+    def solve(state: State) -> str:
         """
         A method implementing the algorithm, which returns a solution for a given puzzle.
 

@@ -168,7 +168,9 @@ class State:
     def get_neighbors(self) -> List["State"]:
         available_moves: List[State] = []
         for direction in [self.neighbors_query_order]:
-            if available := self.operations_str_mapping[direction]():  # iterate over "LRUD" and call function mapped to direction, e.g. {"U": self.up}
+            if available := self.operations_str_mapping[
+                direction
+            ]():  # iterate over "LRUD" and call function mapped to direction, e.g. {"U": self.up}
                 available_moves.append(available)
         return available_moves
 
@@ -180,14 +182,14 @@ class State:
         )
         return self == target_state
 
-    def get_path_to_state(self) -> List[DIRECTIONS_ENUM]:
+    def get_path_to_state(self) -> str:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
         path_to_state: List[DIRECTIONS_ENUM] = []
         if (
-            not self.parent
-        ):  # If node doesn't have a parent it means it's the parent node (end of recursion)
-            path_to_state.reverse()  # Because moves are listed last to first and we want first to last
-            return path_to_state
+            self.parent is None
+        ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
+            path_to_state.reverse()  # Because moves are listed last to first, and we want first to last
+            return "".join(path_to_state)
         else:
             path_to_state.append(self.preceding_operator)
             return self.parent.get_path_to_state()
