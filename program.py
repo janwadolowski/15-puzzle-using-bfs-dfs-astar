@@ -1,5 +1,6 @@
 import argparse
 import os
+import datetime
 
 from memory.State import State
 from algorithms.BFS import BFS
@@ -77,12 +78,19 @@ def write_to_stats_file(n_moves: int, frontier: int, explored: int, recursion: i
 
 
 def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
-    # TODO Change path from list to string, same for every algorithm
+    # Start time marker
+    start_time = datetime.datetime.now()
+    # Run algorithm to solve the puzzle
     moves = algorithm.solve(State.load_state(input_file_path))
+    # End time marker
+    end_time = datetime.datetime.now()
+    # Time difference between markers in milliseconds
+    time_in_ms = (end_time - start_time).total_seconds() * 1000.0
 
+    # TODO Change path from list to string
     write_to_solution_file(moves, len(moves), output_solution)
-    # TODO Uzupełnic parametry głębokość rekursji i czas w milisekundach
-    write_to_stats_file(len(moves), len(algorithm.frontier), len(algorithm.closed_list), 3, 124.23001, output_stats)
+    # TODO Uzupełnic parametr głębokość rekursji
+    write_to_stats_file(len(moves), len(algorithm.frontier), len(algorithm.closed_list), 3, time_in_ms, output_stats)
 
 
 if __name__ == "__main__":
