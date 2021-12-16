@@ -1,28 +1,39 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final, List, Literal, Optional, Tuple
+from typing import (Callable, Dict, Final, List, Literal, Optional, Tuple,
+                    TypeAlias)
 
 # noinspection Mypy
 import numpy as np
 
 from Exception import InvalidCoordinatesException
 
+DIRECTIONS_ENUM: TypeAlias = Literal["left", "right", "up", "down"]
+
 
 @dataclass
 class State:
     state: np.ndarray
+    neighbors_query_order: str
     parent: Optional["State"] = None
-    DIRECTIONS_LIST: Final = ("left", "right", "up", "down")
-    DIRECTIONS_ENUM: Final = Literal["left", "right", "up", "down"]
     preceding_operator: Optional[DIRECTIONS_ENUM] = None
 
+    def __post_init__(self):
+        self.operations_str_mapping: Dict[str, Callable] = {
+            "L": self.left,
+            "R": self.right,
+            "U": self.up,
+            "D": self.down,
+        }
+
     @staticmethod
-    def load_state(filepath: str) -> Optional["State"]:
+    def load_state(filepath: str, neighbors_query_order: str) -> Optional["State"]:
         """
         Load initial state for 15 puzzle from a file.
 
-        :param filepath:
+        :param filepath: Path to txt file the with initial state
+        :param neighbors_query_order: A string with order of directions tby which to check the available moves
         :return: A loaded state or None if the operation failed.
         """
         # TODO: Add :raise <Exception>: docstring
@@ -40,7 +51,7 @@ class State:
                 # [[ '5',  '6',  '7',  '8'],
                 #  [ '9', '10', '11', '12'],
                 #  ['13', '14', '15',  '0']]
-                return State(state=np.array(output_list_str), parent=None)
+                return State(neighbors_query_order=neighbors_query_order, state=np.array(output_list_str), parent=None)
         except Exception as e:
             logging.error(e)
             raise e
@@ -147,7 +158,7 @@ class State:
             logging.debug(
                 f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array={new_state_array}"
             )
-            return State(state=new_state_array, parent=self)
+            return State(neighbors_query_order=self.neighbors_query_order, state=new_state_array, parent=self)
         else:
             logging.debug(
                 f"DEBUG: attempted move from coords: {self._find_zero()} in illegal direction: {direction}."
@@ -156,13 +167,13 @@ class State:
 
     def get_neighbors(self) -> List["State"]:
         available_moves: List[State] = []
-        for move in [self.left, self.right, self.up, self.down]:
-            if available := move():
+        for direction in [self.neighbors_query_order]:
+            if available := self.operations_str_mapping[direction]():  # iterate over "LRUD" and call function mapped to direction, e.g. {"U": self.up}
                 available_moves.append(available)
         return available_moves
 
     def is_target_state(self) -> bool:
-        target_state: Final = State(
+        target_state: Final = State(neighbors_query_order=self.neighbors_query_order,
             state=np.array(
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
             )
@@ -171,7 +182,7 @@ class State:
 
     def get_path_to_state(self) -> List[DIRECTIONS_ENUM]:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
-        path_to_state: List[State.DIRECTIONS_ENUM] = []
+        path_to_state: List[DIRECTIONS_ENUM] = []
         if (
             not self.parent
         ):  # If node doesn't have a parent it means it's the parent node (end of recursion)
@@ -205,6 +216,7 @@ class State:
         if not memo:
             memo = {}
         return State(
+            neighbors_query_order=self.neighbors_query_order,
             state=self.state.copy(),
             parent=self.parent,  # This in only referenced, not copied
         )

@@ -1,16 +1,15 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from queue import Queue
-from typing import Any, ClassVar, List
+from typing import Any, List
 
 from memory.State import State
 
 
 @dataclass
 class BaseAlgorithm(ABC):
-    neighbors_query_order: str
-    frontier: ClassVar[List[State]] = field(default=[])
-    closed_list: [Queue[State]] = field(default=Queue(maxsize=0))
+    frontier: Queue[State] = field(default=Queue(maxsize=0))
+    closed_list: Queue[State] = field(default=Queue(maxsize=0))
 
     @staticmethod
     @abstractmethod

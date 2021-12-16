@@ -10,4 +10,3 @@ class AStar(BaseAlgorithm):
 
     def visualize_solution(self) -> Any:
         pass
-
