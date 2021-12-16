@@ -5,11 +5,10 @@ from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
 
 
-class BFS(BaseAlgorithm, ABC):
+class BFS(BaseAlgorithm):
     """A container class for methods and variables connected with Breadth First Search algorithm. Not meant to be instantiated."""
 
-    @staticmethod
-    def solve(state: State) -> List[State.DIRECTIONS_ENUM]:
+    def solve(self, state: State) -> Optional[List[State.DIRECTIONS_ENUM]]:
         # TODO: verify
         """
         Steps of the algorithm:
@@ -21,7 +20,8 @@ class BFS(BaseAlgorithm, ABC):
         6. if all neighbors have been visited add the state to the closed list
 
         :param state: A starting state of the puzzle
-        :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle
+        :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle.
+                 If no solution has been found - return None
         """
         if state.is_target_state():
             return state.get_path_to_state()
@@ -49,6 +49,6 @@ class BFS(BaseAlgorithm, ABC):
             tmp_state = BFS.frontier[0]
         return tmp_state.get_path_to_state()
 
-    @staticmethod
-    def visualize_solution() -> Any:
+    def visualize_solution(self) -> Any:
+        # TODO: implement (maybe)
         pass
