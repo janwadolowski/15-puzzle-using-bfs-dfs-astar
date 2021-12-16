@@ -1,6 +1,5 @@
 import copy
-from abc import ABC
-from typing import Any, List
+from typing import Any, List, Optional
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State

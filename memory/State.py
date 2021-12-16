@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, List, Tuple, Final, Literal
+from typing import Final, List, Literal, Optional, Tuple
 
 # noinspection Mypy
 import numpy as np

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from queue import Queue
-from typing import ClassVar, List, Any
+from typing import Any, ClassVar, List
 
 from memory.State import State
 
