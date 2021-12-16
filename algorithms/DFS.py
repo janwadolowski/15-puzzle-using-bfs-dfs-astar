@@ -4,7 +4,7 @@ from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
 
 
-class DepthFirstSearch(BaseAlgorithm):
+class DFS(BaseAlgorithm):
     def solve(self, start: State) -> List[str]:
         pass
 

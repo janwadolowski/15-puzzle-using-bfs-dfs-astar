@@ -127,7 +127,7 @@ class State:
         :param direction: one of: "left" | "right" | "up" | "down"
         :return: new State with zero moved in a specified direction or None if a move is illegal.
         """
-        direction_coords: tuple[int, int] | None = None
+        direction_coords: Tuple[int, int] | None = None
         match direction:
             case "left":
                 direction_coords = (0, -1)

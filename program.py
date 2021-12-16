@@ -1,6 +1,12 @@
 import argparse
 import os
 
+from memory.State import State
+from algorithms.BFS import BFS
+from algorithms.DFS import DFS
+from algorithms.AStar import AStar
+from algorithms.BaseAlgorithm import BaseAlgorithm
+
 
 def main() -> None:
     # Program arguments
@@ -17,23 +23,23 @@ def main() -> None:
     solution_file = prepare_file("./" + args.Output_Solution)
     stats_file = prepare_file("./" + args.Output_Stats)
 
+    # Input file path
+    input_file_path = os.path.realpath("./" + args.Input_file)
+
     if args.Strategy == 'bfs':
-        print("Start BFS ")
-        moves = "LRDULDR"  # Moves made to solve the puzzle # TODO ??? do sprawdzenia co będzie zwracać algorytm
-        write_to_solution_file(moves, len(moves), solution_file)  # TODO Dodać parametr
-        write_to_stats_file(len(moves), 1, 2, 3, 124.23001, stats_file)  # TODO Uzupełnic parametry
+        print("Start BFS")
+        bfs = BFS
+        solve_puzzle(bfs, input_file_path, solution_file, stats_file)
 
     elif args.Strategy == 'dfs':
         print("Start DFS")
-        moves = "LRDULDR"  # Moves made to solve the puzzle # TODO ??? do sprawdzenia co będzie zwracać algorytm
-        write_to_solution_file(moves, len(moves), solution_file)  # TODO Dodać parametr
-        write_to_stats_file(len(moves), 1, 2, 3, 124.23001, stats_file)  # TODO  Uzupełnic parametry
+        dfs = DFS
+        solve_puzzle(dfs, input_file_path, solution_file, stats_file)
 
     elif args.Strategy == 'astr':
         print("Start A*")
-        moves = "LRDULDR"  # Moves made to solve the puzzle  # TODO ??? do sprawdzenia co będzie zwracać algorytm
-        write_to_solution_file(moves, len(moves), solution_file)  # TODO Dodać parametr
-        write_to_stats_file(len(moves), 1, 2, 3, 124.23001, stats_file)  # TODO Uzupełnic parametry
+        astr = AStar
+        solve_puzzle(astr, input_file_path, solution_file, stats_file)
 
     solution_file.close()
     stats_file.close()
@@ -54,6 +60,7 @@ def prepare_file(file_path: str):
 
 
 def write_to_solution_file(moves: str, n_moves: int, sol_file) -> None:
+    # TODO how to check condition if puzzle was solved or not
     if n_moves == -1:
         sol_file.write(str(n_moves))
     else:
@@ -67,6 +74,15 @@ def write_to_stats_file(n_moves: int, frontier: int, explored: int, recursion: i
                      str(explored) + "\n" +
                      str(recursion) + "\n" +
                      str(format(time_elapsed, '.3f')) + "\n")
+
+
+def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
+    # TODO Change path from list to string, same for every algorithm
+    moves = algorithm.solve(State.load_state(input_file_path))
+
+    write_to_solution_file(moves, len(moves), output_solution)
+    # TODO Uzupełnic parametry głębokość rekursji i czas w milisekundach
+    write_to_stats_file(len(moves), len(algorithm.frontier), len(algorithm.closed_list), 3, 124.23001, output_stats)
 
 
 if __name__ == "__main__":
