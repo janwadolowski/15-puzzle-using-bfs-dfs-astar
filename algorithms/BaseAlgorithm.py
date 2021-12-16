@@ -8,9 +8,9 @@ from memory.State import State
 
 @dataclass
 class BaseAlgorithm(ABC):
+    neighbors_query_order: str
     frontier: ClassVar[List[State]] = field(default=[])
     closed_list: [Queue[State]] = field(default=Queue(maxsize=0))
-    neighbors_query_order:
 
     @staticmethod
     @abstractmethod
