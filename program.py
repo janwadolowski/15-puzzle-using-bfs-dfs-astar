@@ -1,12 +1,11 @@
 import argparse
-import os
 import datetime
+import os
 
-from memory.State import State
+from algorithms.AStar import AStar
 from algorithms.BFS import BFS
 from algorithms.DFS import DFS
-from algorithms.AStar import AStar
-from algorithms.BaseAlgorithm import BaseAlgorithm
+from memory.State import State
 
 
 def main() -> None:
