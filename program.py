@@ -6,7 +6,6 @@ from memory.State import State
 from algorithms.BFS import BFS
 from algorithms.DFS import DFS
 from algorithms.AStar import AStar
-from algorithms.BaseAlgorithm import BaseAlgorithm
 
 
 def main() -> None:
@@ -29,59 +28,48 @@ def main() -> None:
 
     if args.Strategy == 'bfs':
         print("Start BFS")
-        bfs = BFS
+        bfs = BFS(args.Strategy_param)
         solve_puzzle(bfs, input_file_path, solution_file, stats_file)
 
     elif args.Strategy == 'dfs':
         print("Start DFS")
-        dfs = DFS
+        dfs = DFS(args.Strategy_param)
         solve_puzzle(dfs, input_file_path, solution_file, stats_file)
 
     elif args.Strategy == 'astr':
         print("Start A*")
-        astr = AStar
+        astr = AStar(args.Strategy_param)
         solve_puzzle(astr, input_file_path, solution_file, stats_file)
 
     solution_file.close()
     stats_file.close()
 
 
-# Not necessary, because output files needs to be in the same directory as input files
-def ensure_dir(file_path: str) -> None:
-    directory = os.path.dirname(file_path)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
 def prepare_file(file_path: str):
     file_dir = os.path.realpath(file_path)
-    # ensure_dir(file_dir)
     file = open(file_dir, "w+")
     return file
 
 
 def write_to_solution_file(moves: str, n_moves: int, sol_file) -> None:
     # TODO how to check condition if puzzle was solved or not
-    if n_moves == -1:
-        sol_file.write(str(n_moves))
+    if n_moves is None:
+        sol_file.write(-1)
     else:
-        sol_file.write(str(n_moves) + "\n" + moves)
+        sol_file.write(f"{n_moves}\n{moves}")
 
 
 def write_to_stats_file(n_moves: int, frontier: int, explored: int, recursion: int, time_elapsed: float,
                         stats_file) -> None:
-    stats_file.write(str(n_moves) + "\n" +
-                     str(frontier) + "\n" +
-                     str(explored) + "\n" +
-                     str(recursion) + "\n" +
-                     str(format(time_elapsed, '.3f')) + "\n")
+    stats_file.write(f"{n_moves}\n{frontier}\n{explored}\n{recursion}\n{format(time_elapsed, '.3f')}\n")
 
 
 def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
+    state = State.load_state(input_file_path)
     # Start time marker
     start_time = datetime.datetime.now()
     # Run algorithm to solve the puzzle
-    moves = algorithm.solve(State.load_state(input_file_path))
+    moves = algorithm.solve(state)
     # End time marker
     end_time = datetime.datetime.now()
     # Time difference between markers in milliseconds
