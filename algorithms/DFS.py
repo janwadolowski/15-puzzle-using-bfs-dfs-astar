@@ -1,4 +1,5 @@
-from typing import Any
+import queue
+from dataclasses import field
 import copy
 from typing import Any, List, Optional
 
@@ -11,6 +12,10 @@ class DFS(BaseAlgorithm):
 
     neighbors_quality_order: str
     depth: int
+    frontier: queue.LifoQueue[State] = field(default_factory=queue.LifoQueue)
+
+    def __init__(self, neighbors_quality_order: str):
+        self.neighbors_quality_order = neighbors_quality_order
 
     def solve(self, start: State) -> str:
         pass
@@ -31,41 +36,43 @@ class DFS(BaseAlgorithm):
     If no solution has been found - return None
     """
 
-    def solve(self, state: State) -> Optional[List[State.DIRECTIONS_ENUM]]:
+    def solve(self, state: State) -> Optional[str]:
 
         if state.is_target_state():
             return state.get_path_to_state()                        # STEP 1.
 
         tmp_state: State = state
-        # Add the start node to frontier
-        DFS.frontier.append(tmp_state)                              # STEP 2.
+        # Add the start node to frontier queue, and pop for explore
+        DFS.frontier.put_nowait(tmp_state)                          # STEP 2.
+        DFS.frontier.get_nowait()
 
-        while DFS.frontier:
+        while not DFS.frontier.empty():
+
             # Get a list of all neighbors for the current node and reverse order
-            neighbors: List[State] = tmp_state.get_neighbors()      # STEP 3.
-            neighbors.reverse()
+            neighbors: List[State] = tmp_state.get_neighbors(self.neighbors_quality_order)
+            neighbors.reverse()                                     # STEP 3.
 
             # For each neighbor check if is the target state
             for neighbor in neighbors:                              # STEP 4.
                 if neighbor.is_target_state():
                     return neighbor.get_path_to_state()             # STEP 5.
                 else:
-                    DFS.frontier.append(neighbor)                   # STEP 6.
+                    DFS.frontier.put_nowait(neighbor)               # STEP 6.
 
             # If none of the neighbors is the target:
             # - add the current state to the closed list to avoid revisiting it
             # - remove it from the frontier
-            DFS.closed_list.add(copy.deepcopy(tmp_state))           # STEP 7.
-            DFS.frontier.remove(tmp_state)
+            DFS.closed_list[hash(tmp_state)] = tmp_state           # STEP 7.
+            DFS.frontier.task_done()      # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
 
-            # Get last element on the list and check if it is on closed-list, if not start to explore
-            while True:
-                tmp_state = DFS.frontier[len(DFS.frontier) - 1]     # STEP 8.
-                if tmp_state not in DFS.closed_list:            # TODO nie wiem czy to dobrze sprawdzam (porównuję) listę z kolejką
-                    break
-                DFS.frontier.remove(tmp_state)
+        # Get last element from queue and check if it is on closed-list, if not start to explore
+        while not DFS.frontier.empty():
+            tmp_state = DFS.frontier.get_nowait()                   # STEP 8.
+            if hash(tmp_state) not in DFS.closed_list.keys():  # TODO nie wiem czy to dobrze sprawdzam (porównuję) listę z kolejką
+                break
+            DFS.frontier.task_done()  # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
 
-        return tmp_state.get_path_to_state()     # TODO tu nie powinno zwracać None? bo jeśli nie znalazło to nie powinno zwrócić ścieżki
+        return None     # TODO tu nie powinno zwracać None? bo jeśli nie znalazło to nie powinno zwrócić ścieżki
 
     def visualize_solution(self) -> Any:
         pass
