@@ -1,7 +1,5 @@
 import queue
-from dataclasses import field
-import copy
-from typing import Any, List, Optional, Dict
+from typing import Any, Dict, List, Optional
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
@@ -37,7 +35,7 @@ class DFS(BaseAlgorithm):
         first_run = True
 
         if state.is_target_state():
-            return state.get_path_to_state()                        # STEP 1.
+            return state.get_path_to_state()  # STEP 1.
 
         tmp_state: State = state
         # Add the start node to frontier queue, and pop for explore
@@ -49,13 +47,15 @@ class DFS(BaseAlgorithm):
                 first_run = False
 
             # Get a list of all neighbors for the current node and reverse order
-            neighbors: List[State] = tmp_state.get_neighbors(self.neighbors_quality_order)
-            neighbors.reverse()                                     # STEP 3.
+            neighbors: List[State] = tmp_state.get_neighbors(
+                self.neighbors_quality_order
+            )
+            neighbors.reverse()  # STEP 3.
 
             # For each neighbor check if is the target state
-            for neighbor in neighbors:                              # STEP 4.
+            for neighbor in neighbors:  # STEP 4.
                 if neighbor.is_target_state():
-                    return neighbor.get_path_to_state()             # STEP 5.
+                    return neighbor.get_path_to_state()  # STEP 5.
                 else:
                     self.frontier.put_nowait(neighbor)               # STEP 6.
 

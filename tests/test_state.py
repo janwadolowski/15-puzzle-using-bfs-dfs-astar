@@ -1,10 +1,14 @@
-from typing import List, Tuple
+import copy
+import logging
+from typing import List
 
 import numpy as np
 import pytest
 from pytest_mock import MockerFixture
 
 from memory.State import DIRECTIONS_ENUM, State
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class TestState:
@@ -338,7 +342,7 @@ class TestState:
         # Assertions
         check_legal_move_patch.assert_called_once_with(direction_coords)
         sum_tuples_patch.assert_not_called()
-        find_zero_patch.assert_not_called()
+        find_zero_patch.assert_called_once()
         swap_values_patch.assert_not_called()
         assert new_state is None
 
@@ -389,23 +393,13 @@ class TestState:
         neighbors: List[State] = state_bottom_left_corner.get_neighbors("LRUD")
 
         assert neighbors == [x for x in available_neighbors.values() if x is not None]
-        patch_left.assert_called_once()
-        patch_right.assert_called_once()
-        patch_up.assert_called_once()
-        patch_down.assert_called_once()
 
     def test_is_target_state(self, target_state, some_state):
-        also_target_state = State(
-            state=np.array(
-                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
-            ),
-            parent=some_state,
-        )
-        assert target_state != some_state
-        assert target_state == also_target_state
+        assert not some_state.is_target_state()
+        assert target_state.is_target_state()
 
-    # def test_deepcopy(self, some_state):
-    #     deepcopy = copy.deepcopy(some_state)
-    #     assert (some_state.state == deepcopy.state).all()
-    #     assert some_state.preceding_operator == deepcopy.preceding_operator
-    #     assert some_state.parent is deepcopy.parent
+    def test_deepcopy(self, some_state):
+        deepcopy = copy.deepcopy(some_state)
+        assert (some_state.state == deepcopy.state).all()
+        assert some_state.preceding_operator == deepcopy.preceding_operator
+        assert some_state.parent is deepcopy.parent

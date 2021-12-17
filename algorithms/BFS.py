@@ -1,5 +1,6 @@
 import copy
-from typing import Any, List, Optional
+from queue import Queue
+from typing import Any, Dict, List, Optional
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
@@ -9,7 +10,9 @@ class BFS(BaseAlgorithm):
     """A class for Breadth First Search algorithm initialised with an algorithm parameter."""
 
     def __init__(self, neighbors_quality_order: str):
+        self.closed_list: Dict[int, State] = {}  # mapping {hash(state): state}
         self.neighbors_quality_order = neighbors_quality_order
+        self.frontier: Queue[State] = Queue()
 
     def solve(self, state: State) -> Optional[str]:
         # TODO: verify
@@ -33,13 +36,13 @@ class BFS(BaseAlgorithm):
         tmp_state: State = state
         while not tmp_state.is_target_state():
             # Add the current node to frontier
-            BFS.frontier.enqueue(tmp_state)
+            self.frontier.enqueue(tmp_state)
             # Get a list of all neighbors for the current node
             neighbors: List[State] = tmp_state.get_neighbors()
             # Sift out already visited neighbors
             neighbors = list(filter(lambda x: x not in BFS.closed_list, neighbors))
             # Add neighbors to the frontier list
-            BFS.frontier.extend(neighbors)
+            self.frontier.extend(neighbors)
             # For each neighbor check if it's the target state
             for neighbor in neighbors:
                 if neighbor.is_target_state():
@@ -48,8 +51,8 @@ class BFS(BaseAlgorithm):
             # If none of the neighbors is the target:
             # - add the current state to the closed list to avoid revisiting it
             # - remove it from the frontier
-            BFS.closed_list.add(copy.deepcopy(tmp_state))
-            BFS.frontier.remove(tmp_state)
+            self.closed_list.add(copy.deepcopy(tmp_state))
+            self.frontier.remove(tmp_state)
             tmp_state = BFS.frontier[0]
         return tmp_state.get_path_to_state()
 

@@ -1,11 +1,14 @@
 import argparse
 import datetime
+import logging
 import os
 
 from algorithms.AStar import AStar
 from algorithms.BFS import BFS
 from algorithms.DFS import DFS
 from memory.State import State
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 def main() -> None:
@@ -69,9 +72,17 @@ def write_to_solution_file(moves: str, sol_file) -> None:
         sol_file.write(f"{len(moves)}\n{moves}")
 
 
-def write_to_stats_file(n_moves: int, frontier: int, explored: int, recursion: int, time_elapsed: float,
-                        stats_file) -> None:
-    stats_file.write(f"{n_moves}\n{frontier}\n{explored}\n{recursion}\n{format(time_elapsed, '.3f')}\n")
+def write_to_stats_file(
+    n_moves: int,
+    frontier: int,
+    explored: int,
+    recursion: int,
+    time_elapsed: float,
+    stats_file,
+) -> None:
+    stats_file.write(
+        f"{n_moves}\n{frontier}\n{explored}\n{recursion}\n{format(time_elapsed, '.3f')}\n"
+    )
 
 
 def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):

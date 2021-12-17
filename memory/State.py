@@ -1,8 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import (Callable, Dict, Final, List, Literal, Optional, Tuple,
-                    TypeAlias)
+from typing import Callable, Dict, Final, List, Literal, Optional, Tuple, TypeAlias
 
 # noinspection Mypy
 import numpy as np
@@ -198,15 +197,14 @@ class State:
             path_to_state.append(self.preceding_operator)
             return self.parent.get_path_to_state()
 
-    def __eq__(self, other: "State") -> bool:
-        compare_states = self.state == other.state
-        if isinstance(other, self.__class__) and compare_states:
-            return True
-        else:
-            return False
-
     def __hash__(self) -> int:
         return hash(self.state.tobytes())
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        else:
+            return (self.state == other.state).all()
 
     def __deepcopy__(self, memo=None) -> "State":
         # TODO do we need this?
