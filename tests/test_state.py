@@ -1,5 +1,6 @@
+import copy
 import logging
-from typing import List, Tuple
+from typing import List
 
 import numpy as np
 import pytest
@@ -397,8 +398,8 @@ class TestState:
         assert not some_state.is_target_state()
         assert target_state.is_target_state()
 
-    # def test_deepcopy(self, some_state):
-    #     deepcopy = copy.deepcopy(some_state)
-    #     assert (some_state.state == deepcopy.state).all()
-    #     assert some_state.preceding_operator == deepcopy.preceding_operator
-    #     assert some_state.parent is deepcopy.parent
+    def test_deepcopy(self, some_state):
+        deepcopy = copy.deepcopy(some_state)
+        assert (some_state.state == deepcopy.state).all()
+        assert some_state.preceding_operator == deepcopy.preceding_operator
+        assert some_state.parent is deepcopy.parent
