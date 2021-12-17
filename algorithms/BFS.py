@@ -32,7 +32,7 @@ class BFS(BaseAlgorithm):
         tmp_state: State = state
         while not tmp_state.is_target_state():
             # Add the current node to frontier
-            BFS.frontier.append(tmp_state)
+            BFS.frontier.enqueue(tmp_state)
             # Get a list of all neighbors for the current node
             neighbors: List[State] = tmp_state.get_neighbors()
             # Sift out already visited neighbors

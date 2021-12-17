@@ -15,7 +15,6 @@ DIRECTIONS_ENUM: TypeAlias = Literal["left", "right", "up", "down"]
 @dataclass
 class State:
     state: np.ndarray
-    neighbors_query_order: str
     parent: Optional["State"] = None
     preceding_operator: Optional[DIRECTIONS_ENUM] = None
 
@@ -28,7 +27,7 @@ class State:
         }
 
     @staticmethod
-    def load_state(filepath: str, neighbors_query_order: str) -> Optional["State"]:
+    def load_state(filepath: str) -> Optional["State"]:
         """
         Load initial state for 15 puzzle from a file.
 
@@ -50,7 +49,10 @@ class State:
                 # [[ '5',  '6',  '7',  '8'],
                 #  [ '9', '10', '11', '12'],
                 #  ['13', '14', '15',  '0']]
-                return State(neighbors_query_order=neighbors_query_order, state=np.array(output_list_str), parent=None)
+                return State(
+                    state=np.array(output_list_str),
+                    parent=None,
+                )
         except Exception as e:
             logging.error(e)
             raise e
@@ -157,16 +159,19 @@ class State:
             logging.debug(
                 f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array={new_state_array}"
             )
-            return State(neighbors_query_order=self.neighbors_query_order, state=new_state_array, parent=self)
+            return State(
+                state=new_state_array,
+                parent=self,
+            )
         else:
             logging.debug(
                 f"DEBUG: attempted move from coords: {self._find_zero()} in illegal direction: {direction}."
             )
             return None
 
-    def get_neighbors(self) -> List["State"]:
+    def get_neighbors(self, neighbors_query_order: str) -> List["State"]:
         available_moves: List[State] = []
-        for direction in [self.neighbors_query_order]:
+        for direction in neighbors_query_order:
             if available := self.operations_str_mapping[
                 direction
             ]():  # iterate over "LRUD" and call function mapped to direction, e.g. {"U": self.up}
@@ -174,10 +179,10 @@ class State:
         return available_moves
 
     def is_target_state(self) -> bool:
-        target_state: Final = State(neighbors_query_order=self.neighbors_query_order,
+        target_state: Final = State(
             state=np.array(
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
-            )
+            ),
         )
         return self == target_state
 
@@ -217,7 +222,6 @@ class State:
         if not memo:
             memo = {}
         return State(
-            neighbors_query_order=self.neighbors_query_order,
             state=self.state.copy(),
             parent=self.parent,  # This in only referenced, not copied
         )
