@@ -61,12 +61,12 @@ def prepare_file(file_path: str):
     return file
 
 
-def write_to_solution_file(moves: str, n_moves: int, sol_file) -> None:
+def write_to_solution_file(moves: str, sol_file) -> None:
     # TODO how to check condition if puzzle was solved or not
-    if n_moves is None:
-        sol_file.write(-1)
+    if moves is None:
+        sol_file.write(str(-1))
     else:
-        sol_file.write(f"{n_moves}\n{moves}")
+        sol_file.write(f"{len(moves)}\n{moves}")
 
 
 def write_to_stats_file(n_moves: int, frontier: int, explored: int, recursion: int, time_elapsed: float,
@@ -85,12 +85,18 @@ def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
     # Time difference between markers in milliseconds
     time_in_ms = (end_time - start_time).total_seconds() * 1000.0
 
+
+
     # TODO Change path from list to string
-    write_to_solution_file(moves, len(moves), output_solution)
+    write_to_solution_file(moves, output_solution)
     # TODO Uzupełnic parametr głębokość rekursji
+    n_moves = -1
+    if moves is not None:
+        n_moves = len(moves)
+
     write_to_stats_file(
-        len(moves),
-        len(algorithm.frontier),
+        n_moves,
+        algorithm.frontier.qsize(),
         len(algorithm.closed_list),
         3,
         time_in_ms,

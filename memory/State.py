@@ -199,7 +199,8 @@ class State:
             return self.parent.get_path_to_state()
 
     def __eq__(self, other: "State") -> bool:
-        if isinstance(other, self.__class__) and (self.state == other.state).all():
+        compare_states = self.state == other.state
+        if isinstance(other, self.__class__) and compare_states:
             return True
         else:
             return False

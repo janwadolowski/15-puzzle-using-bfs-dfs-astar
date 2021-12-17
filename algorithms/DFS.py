@@ -1,7 +1,7 @@
 import queue
 from dataclasses import field
 import copy
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Dict
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
@@ -10,15 +10,12 @@ from memory.State import State
 class DFS(BaseAlgorithm):
     """A class for Depth First Search algorithm initialised with algorithm parameters."""
 
-    neighbors_quality_order: str
-    depth: int
-    frontier: queue.LifoQueue[State] = field(default_factory=queue.LifoQueue)
-
     def __init__(self, neighbors_quality_order: str):
         self.neighbors_quality_order = neighbors_quality_order
+        self.frontier: queue.LifoQueue[State] = queue.LifoQueue()
+        self.closed_list: Dict[int, State] = {}
+        self.depth: int
 
-    def solve(self, start: State) -> str:
-        pass
     """
     Steps of the algorithm:
     1. check if starting state is the target state, if yes return the path to it, else proceed
@@ -43,10 +40,16 @@ class DFS(BaseAlgorithm):
 
         tmp_state: State = state
         # Add the start node to frontier queue, and pop for explore
-        DFS.frontier.put_nowait(tmp_state)                          # STEP 2.
-        DFS.frontier.get_nowait()
+        self.frontier.put(tmp_state, False)                          # STEP 2.
 
-        while not DFS.frontier.empty():
+
+        while not self.frontier.empty():
+            # Get last element from queue and check if it is on closed-list, if not start to explore
+            while not self.frontier.empty():
+                tmp_state = self.frontier.get_nowait()                   # STEP 8.
+                if hash(tmp_state) not in self.closed_list.keys():  # TODO nie wiem czy to dobrze sprawdzam (porównuję) listę z kolejką
+                    break
+                #self.frontier.task_done()  # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
 
             # Get a list of all neighbors for the current node and reverse order
             neighbors: List[State] = tmp_state.get_neighbors(self.neighbors_quality_order)
@@ -57,20 +60,15 @@ class DFS(BaseAlgorithm):
                 if neighbor.is_target_state():
                     return neighbor.get_path_to_state()             # STEP 5.
                 else:
-                    DFS.frontier.put_nowait(neighbor)               # STEP 6.
+                    self.frontier.put_nowait(neighbor)               # STEP 6.
+
 
             # If none of the neighbors is the target:
             # - add the current state to the closed list to avoid revisiting it
             # - remove it from the frontier
-            DFS.closed_list[hash(tmp_state)] = tmp_state           # STEP 7.
-            DFS.frontier.task_done()      # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
+            self.closed_list[hash(tmp_state)] = tmp_state           # STEP 7.
+            #self.frontier.task_done()      # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
 
-        # Get last element from queue and check if it is on closed-list, if not start to explore
-        while not DFS.frontier.empty():
-            tmp_state = DFS.frontier.get_nowait()                   # STEP 8.
-            if hash(tmp_state) not in DFS.closed_list.keys():  # TODO nie wiem czy to dobrze sprawdzam (porównuję) listę z kolejką
-                break
-            DFS.frontier.task_done()  # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
 
         return None     # TODO tu nie powinno zwracać None? bo jeśli nie znalazło to nie powinno zwrócić ścieżki
 
