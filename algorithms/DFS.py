@@ -1,7 +1,5 @@
 import queue
-from dataclasses import field
-import copy
-from typing import Any, List, Optional, Dict
+from typing import Any, Dict, List, Optional
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
@@ -36,41 +34,42 @@ class DFS(BaseAlgorithm):
     def solve(self, state: State) -> Optional[str]:
 
         if state.is_target_state():
-            return state.get_path_to_state()                        # STEP 1.
+            return state.get_path_to_state()  # STEP 1.
 
         tmp_state: State = state
         # Add the start node to frontier queue, and pop for explore
-        self.frontier.put(tmp_state, False)                          # STEP 2.
-
+        self.frontier.put(tmp_state, False)  # STEP 2.
 
         while not self.frontier.empty():
             # Get last element from queue and check if it is on closed-list, if not start to explore
             while not self.frontier.empty():
-                tmp_state = self.frontier.get_nowait()                   # STEP 8.
-                if hash(tmp_state) not in self.closed_list.keys():  # TODO nie wiem czy to dobrze sprawdzam (porównuję) listę z kolejką
+                tmp_state = self.frontier.get_nowait()  # STEP 8.
+                if (
+                    hash(tmp_state) not in self.closed_list.keys()
+                ):  # TODO nie wiem czy to dobrze sprawdzam (porównuję) listę z kolejką
                     break
-                #self.frontier.task_done()  # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
+                # self.frontier.task_done()  # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
 
             # Get a list of all neighbors for the current node and reverse order
-            neighbors: List[State] = tmp_state.get_neighbors(self.neighbors_quality_order)
-            neighbors.reverse()                                     # STEP 3.
+            neighbors: List[State] = tmp_state.get_neighbors(
+                self.neighbors_quality_order
+            )
+            neighbors.reverse()  # STEP 3.
 
             # For each neighbor check if is the target state
-            for neighbor in neighbors:                              # STEP 4.
+            for neighbor in neighbors:  # STEP 4.
                 if neighbor.is_target_state():
-                    return neighbor.get_path_to_state()             # STEP 5.
+                    return neighbor.get_path_to_state()  # STEP 5.
                 else:
-                    self.frontier.put_nowait(neighbor)               # STEP 6.
-
+                    self.frontier.put_nowait(neighbor)  # STEP 6.
 
             # If none of the neighbors is the target:
             # - add the current state to the closed list to avoid revisiting it
             # - remove it from the frontier
-            self.closed_list[hash(tmp_state)] = tmp_state           # STEP 7.
-            #self.frontier.task_done()      # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
+            self.closed_list[hash(tmp_state)] = tmp_state  # STEP 7.
+            # self.frontier.task_done()      # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
 
-
-        return None     # TODO tu nie powinno zwracać None? bo jeśli nie znalazło to nie powinno zwrócić ścieżki
+        return None  # TODO tu nie powinno zwracać None? bo jeśli nie znalazło to nie powinno zwrócić ścieżki
 
     def visualize_solution(self) -> Any:
         pass

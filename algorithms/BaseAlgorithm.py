@@ -1,21 +1,12 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from queue import Queue
-from typing import Any, Dict
+from typing import Any
 
 from memory.State import State
 
 
-@dataclass
 class BaseAlgorithm(ABC):
-    frontier: Queue[State] = field(default_factory=Queue)
-    closed_list: Dict[int, State] = field(
-        default_factory=dict
-    )  # mapping {hash(state): state}
-
-    @staticmethod
     @abstractmethod
-    def solve(state: State) -> str:
+    def solve(self, state: State) -> str:
         """
         A method implementing the algorithm, which returns a solution for a given puzzle.
 
@@ -25,8 +16,7 @@ class BaseAlgorithm(ABC):
         """
         pass
 
-    @staticmethod
     @abstractmethod
-    def visualize_solution() -> Any:
+    def visualize_solution(self, state: State) -> Any:
         # TODO: maybe
         pass
