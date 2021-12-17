@@ -6,13 +6,15 @@ from memory.State import State
 
 
 class BFS(BaseAlgorithm):
-    """A container class for methods and variables connected with Breadth First Search algorithm. Not meant to be instantiated."""
+    """A class for Breadth First Search algorithm initialised with an algorithm parameter."""
+
+    neighbors_quality_order: str
 
     def solve(self, state: State) -> Optional[str]:
         # TODO: verify
         """
         Steps of the algorithm:
-        1. check if a state is the target state, if yes return the path to it, else proceed
+        1. check if a state is the target state, if yes return, no moves need to be taken as the initial state is the target state, else:
         2. check if a state is in the closed list, if yes skip it, else proceed
         3. add state to frontier
         4. get a list of possible neighbors
@@ -23,6 +25,7 @@ class BFS(BaseAlgorithm):
         :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle.
                  If no solution has been found - return None
         """
+        # if initial state is the target state we don't even enter the loop
         if state.is_target_state():
             return state.get_path_to_state()
 

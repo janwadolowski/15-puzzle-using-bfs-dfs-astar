@@ -33,7 +33,6 @@ class State:
         Load initial state for 15 puzzle from a file.
 
         :param filepath: Path to txt file the with initial state
-        :param neighbors_query_order: A string with order of directions tby which to check the available moves
         :return: A loaded state or None if the operation failed.
         """
         # TODO: Add :raise <Exception>: docstring
