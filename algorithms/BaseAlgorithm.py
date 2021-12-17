@@ -8,7 +8,7 @@ from memory.State import State
 
 @dataclass
 class BaseAlgorithm(ABC):
-    frontier: Queue[State] = field(default=Queue(maxsize=0))
+    frontier: Queue[State] = field(default_factory=Queue)
     closed_list: Dict[int, State] = field(
         default_factory=dict
     )  # mapping {hash(state): state}

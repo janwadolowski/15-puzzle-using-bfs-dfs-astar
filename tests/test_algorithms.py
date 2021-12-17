@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 import pytest
 
@@ -18,4 +16,5 @@ class TestAlgorithms:
         yield example_state
 
     def test_bfs(self, some_state):
-        solution: List[State.DIRECTIONS_ENUM] = BFS.solve(some_state)
+        bfs = BFS("UDLR")
+        solution: str = bfs.solve(some_state)

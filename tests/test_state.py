@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from pytest_mock import MockerFixture
 
-from memory.State import State
+from memory.State import DIRECTIONS_ENUM, State
 
 
 class TestState:
@@ -284,7 +284,7 @@ class TestState:
         self,
         some_state,
         mocker: MockerFixture,
-        direction: str,
+        direction: DIRECTIONS_ENUM,
         direction_coords: Tuple[int, int],
         new_coords: Tuple[int, int],
         swapped_array: np.ndarray,
@@ -321,7 +321,7 @@ class TestState:
         self,
         state_bottom_left_corner: State,
         mocker: MockerFixture,
-        direction: str,
+        direction: DIRECTIONS_ENUM,
         direction_coords: Tuple[int, int],
         new_coords: Tuple[int, int],
     ):

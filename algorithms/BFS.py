@@ -8,7 +8,8 @@ from memory.State import State
 class BFS(BaseAlgorithm):
     """A class for Breadth First Search algorithm initialised with an algorithm parameter."""
 
-    neighbors_quality_order: str
+    def __init__(self, neighbors_quality_order: str):
+        self.neighbors_quality_order = neighbors_quality_order
 
     def solve(self, state: State) -> Optional[str]:
         # TODO: verify
