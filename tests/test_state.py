@@ -338,7 +338,7 @@ class TestState:
         # Assertions
         check_legal_move_patch.assert_called_once_with(direction_coords)
         sum_tuples_patch.assert_not_called()
-        find_zero_patch.assert_not_called()
+        find_zero_patch.assert_called_once()
         swap_values_patch.assert_not_called()
         assert new_state is None
 

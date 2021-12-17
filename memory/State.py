@@ -1,8 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import (Callable, Dict, Final, List, Literal, Optional, Tuple,
-                    TypeAlias)
+from typing import Callable, Dict, Final, List, Literal, Optional, Tuple, TypeAlias
 
 # noinspection Mypy
 import numpy as np
@@ -184,7 +183,7 @@ class State:
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
             ),
         )
-        return (self.state == target_state.state).all()
+        return self == target_state
 
     def get_path_to_state(self) -> str:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
@@ -200,6 +199,12 @@ class State:
 
     def __hash__(self) -> int:
         return hash(self.state.tobytes())
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        else:
+            return (self.state == other.state).all()
 
     def __deepcopy__(self, memo=None) -> "State":
         # TODO do we need this?
