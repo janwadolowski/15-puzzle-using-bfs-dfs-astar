@@ -1,3 +1,4 @@
+import logging
 from typing import List, Tuple
 
 import numpy as np
@@ -5,6 +6,8 @@ import pytest
 from pytest_mock import MockerFixture
 
 from memory.State import DIRECTIONS_ENUM, State
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class TestState:
@@ -389,10 +392,6 @@ class TestState:
         neighbors: List[State] = state_bottom_left_corner.get_neighbors("LRUD")
 
         assert neighbors == [x for x in available_neighbors.values() if x is not None]
-        patch_left.assert_called_once()
-        patch_right.assert_called_once()
-        patch_up.assert_called_once()
-        patch_down.assert_called_once()
 
     def test_is_target_state(self, target_state, some_state):
         assert not some_state.is_target_state()

@@ -1,11 +1,14 @@
 import argparse
 import datetime
+import logging
 import os
 
 from algorithms.AStar import AStar
 from algorithms.BFS import BFS
 from algorithms.DFS import DFS
 from memory.State import State
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 def main() -> None:
