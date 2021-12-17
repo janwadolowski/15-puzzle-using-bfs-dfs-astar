@@ -184,7 +184,6 @@ class State:
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
             ),
         )
-        logging.info(f"self.state= {self.state} other.state= {target_state.state}")
         return (self.state == target_state.state).all()
 
     def get_path_to_state(self) -> str:
