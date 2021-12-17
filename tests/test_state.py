@@ -22,21 +22,27 @@ class TestState:
     @pytest.fixture
     def target_state(self):
         example_state: State = State(
-            np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]])
+            state=np.array(
+                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
+            )
         )
         yield example_state
 
     @pytest.fixture
     def state_bottom_left_corner(self):
         example_state: State = State(
-            np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [0, 14, 15, 13]])
+            state=np.array(
+                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [0, 14, 15, 13]]
+            )
         )
         yield example_state
 
     @pytest.fixture
     def state_top_right_corner(self):
         example_state: State = State(
-            np.array([[1, 2, 3, 0], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 4]])
+            state=np.array(
+                [[1, 2, 3, 0], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 4]]
+            )
         )
         yield example_state
 
@@ -60,7 +66,7 @@ class TestState:
         assert test_state.parent is test_parent_state
 
     def test_load_state(self):
-        test_state = State.load_state(self.EXAMPLE_FRAME_PATH)
+        test_state = State.load_state(filepath=self.EXAMPLE_FRAME_PATH)
         assert type(test_state) is State
         assert test_state.state.shape == (4, 4)
 
@@ -357,10 +363,14 @@ class TestState:
         available_neighbors = {
             "left": None,
             "right": State(
-                np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [14, 0, 15, 13]])
+                state=np.array(
+                    [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [14, 0, 15, 13]]
+                )
             ),
             "up": State(
-                np.array([[1, 2, 3, 4], [5, 6, 7, 8], [0, 10, 11, 12], [9, 14, 15, 13]])
+                state=np.array(
+                    [[1, 2, 3, 4], [5, 6, 7, 8], [0, 10, 11, 12], [9, 14, 15, 13]]
+                )
             ),
             "down": None,
         }
@@ -376,7 +386,7 @@ class TestState:
         patch_down = mocker.patch(
             target="memory.State.State.down", return_value=available_neighbors["down"]
         )
-        neighbors: List[State] = state_bottom_left_corner.get_neighbors()
+        neighbors: List[State] = state_bottom_left_corner.get_neighbors("LRUD")
 
         assert neighbors == [x for x in available_neighbors.values() if x is not None]
         patch_left.assert_called_once()
