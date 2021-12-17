@@ -14,7 +14,7 @@ class DFS(BaseAlgorithm):
         self.neighbors_quality_order = neighbors_quality_order
         self.frontier: queue.LifoQueue[State] = queue.LifoQueue()
         self.closed_list: Dict[int, State] = {}
-        self.depth: int
+        self.depth: int = 0
 
     """
     Steps of the algorithm:
@@ -34,22 +34,19 @@ class DFS(BaseAlgorithm):
     """
 
     def solve(self, state: State) -> Optional[str]:
+        first_run = True
 
         if state.is_target_state():
             return state.get_path_to_state()                        # STEP 1.
 
         tmp_state: State = state
         # Add the start node to frontier queue, and pop for explore
-        self.frontier.put(tmp_state, False)                          # STEP 2.
-
+        self.frontier.put_nowait(tmp_state)                        # STEP 2.
 
         while not self.frontier.empty():
-            # Get last element from queue and check if it is on closed-list, if not start to explore
-            while not self.frontier.empty():
-                tmp_state = self.frontier.get_nowait()                   # STEP 8.
-                if hash(tmp_state) not in self.closed_list.keys():  # TODO nie wiem czy to dobrze sprawdzam (porównuję) listę z kolejką
-                    break
-                #self.frontier.task_done()  # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
+            if first_run:
+                tmp_state = self.frontier.get_nowait()
+                first_run = False
 
             # Get a list of all neighbors for the current node and reverse order
             neighbors: List[State] = tmp_state.get_neighbors(self.neighbors_quality_order)
@@ -62,15 +59,18 @@ class DFS(BaseAlgorithm):
                 else:
                     self.frontier.put_nowait(neighbor)               # STEP 6.
 
-
-            # If none of the neighbors is the target:
-            # - add the current state to the closed list to avoid revisiting it
-            # - remove it from the frontier
+            # If none of the neighbors is the target - add the current state to the closed list to avoid revisiting it
             self.closed_list[hash(tmp_state)] = tmp_state           # STEP 7.
-            #self.frontier.task_done()      # Jeśli dobrze rozumiem to po ściągnieciu zadania z kolejki, trzeba oznaczyć jako wykonane
+            self.depth += 1
 
+            # Get last element from queue and check if it is on closed-list, if not start to explore
+            while not self.frontier.empty():
+                tmp_state = self.frontier.get_nowait()              # STEP 8.
+                if hash(tmp_state) not in self.closed_list.keys():
+                    break
+                self.depth -= 1
 
-        return None     # TODO tu nie powinno zwracać None? bo jeśli nie znalazło to nie powinno zwrócić ścieżki
+        return None                                                 # STEP 9.
 
     def visualize_solution(self) -> Any:
         pass

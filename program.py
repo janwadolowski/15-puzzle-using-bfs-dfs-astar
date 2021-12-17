@@ -85,9 +85,6 @@ def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
     # Time difference between markers in milliseconds
     time_in_ms = (end_time - start_time).total_seconds() * 1000.0
 
-
-
-    # TODO Change path from list to string
     write_to_solution_file(moves, output_solution)
     # TODO Uzupełnic parametr głębokość rekursji
     n_moves = -1
@@ -98,7 +95,7 @@ def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
         n_moves,
         algorithm.frontier.qsize(),
         len(algorithm.closed_list),
-        3,
+        algorithm.depth,
         time_in_ms,
         output_stats,
     )

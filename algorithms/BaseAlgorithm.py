@@ -8,6 +8,7 @@ from memory.State import State
 
 @dataclass
 class BaseAlgorithm(ABC):
+    depth: int
     frontier: Queue[State] = field(default_factory=Queue)
     closed_list: Dict[int, State] = field(
         default_factory=dict
