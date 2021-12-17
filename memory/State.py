@@ -184,7 +184,8 @@ class State:
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
             ),
         )
-        return self == target_state
+        logging.info(f"self.state= {self.state} other.state= {target_state.state}")
+        return self.state.all() == target_state.state.all()
 
     def get_path_to_state(self) -> str:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
@@ -197,13 +198,6 @@ class State:
         else:
             path_to_state.append(self.preceding_operator)
             return self.parent.get_path_to_state()
-
-    def __eq__(self, other: "State") -> bool:
-        compare_states = self.state == other.state
-        if isinstance(other, self.__class__) and compare_states:
-            return True
-        else:
-            return False
 
     def __hash__(self) -> int:
         return hash(self.state.tobytes())

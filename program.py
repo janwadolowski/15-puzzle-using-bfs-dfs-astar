@@ -69,9 +69,17 @@ def write_to_solution_file(moves: str, sol_file) -> None:
         sol_file.write(f"{len(moves)}\n{moves}")
 
 
-def write_to_stats_file(n_moves: int, frontier: int, explored: int, recursion: int, time_elapsed: float,
-                        stats_file) -> None:
-    stats_file.write(f"{n_moves}\n{frontier}\n{explored}\n{recursion}\n{format(time_elapsed, '.3f')}\n")
+def write_to_stats_file(
+    n_moves: int,
+    frontier: int,
+    explored: int,
+    recursion: int,
+    time_elapsed: float,
+    stats_file,
+) -> None:
+    stats_file.write(
+        f"{n_moves}\n{frontier}\n{explored}\n{recursion}\n{format(time_elapsed, '.3f')}\n"
+    )
 
 
 def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
@@ -84,8 +92,6 @@ def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
     end_time = datetime.datetime.now()
     # Time difference between markers in milliseconds
     time_in_ms = (end_time - start_time).total_seconds() * 1000.0
-
-
 
     # TODO Change path from list to string
     write_to_solution_file(moves, output_solution)

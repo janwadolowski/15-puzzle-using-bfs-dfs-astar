@@ -395,14 +395,8 @@ class TestState:
         patch_down.assert_called_once()
 
     def test_is_target_state(self, target_state, some_state):
-        also_target_state = State(
-            state=np.array(
-                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
-            ),
-            parent=some_state,
-        )
-        assert target_state != some_state
-        assert target_state == also_target_state
+        assert not some_state.is_target_state()
+        assert target_state.is_target_state()
 
     # def test_deepcopy(self, some_state):
     #     deepcopy = copy.deepcopy(some_state)
