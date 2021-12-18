@@ -46,7 +46,7 @@ class DFS(BaseAlgorithm):
             logging.debug(f"STARTING STATE = TARGET STATE")
             return (
                 state.get_path_to_state()
-            )  # STEP 1.     # TODO sprawdzic co się stanie jad od razu będzie docelowym
+            )  # STEP 1.     # TODO sprawdzic co zwracać jak od razu będzie docelowym
 
         tmp_state: State = state
         # Add the start node to frontier queue, and pop for explore
@@ -69,7 +69,7 @@ class DFS(BaseAlgorithm):
                 if neighbor.is_target_state():
                     if self.max_depth < neighbor.get_state_depth():
                         self.max_depth = neighbor.get_state_depth()
-                    logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}")
+                    logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}")
                     return neighbor.get_path_to_state()  # STEP 5.
                 else:
                     self.frontier.put_nowait(neighbor)  # STEP 6.

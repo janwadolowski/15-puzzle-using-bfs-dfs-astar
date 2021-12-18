@@ -164,6 +164,7 @@ class State:
             return State(
                 state=new_state_array,
                 parent=self,
+                preceding_operator=direction
             )
         else:
             logging.debug(
@@ -188,8 +189,10 @@ class State:
         )
         return self == target_state
 
-    def get_path_to_state(self, path_to_state: List[str] = []) -> str:
+    def get_path_to_state(self, path_to_state: List[str] = None) -> str:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
+        if path_to_state is None:
+            path_to_state = []
         if (
             self.preceding_operator is None
         ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
@@ -197,7 +200,7 @@ class State:
             return "".join(path_to_state)
         else:
             path_to_state.append(self.preceding_operator[0].upper())
-            return self.parent.get_path_to_state()
+            return self.parent.get_path_to_state(path_to_state)
 
 
     def get_state_depth(self) -> int:
