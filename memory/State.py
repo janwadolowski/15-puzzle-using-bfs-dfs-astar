@@ -1,7 +1,8 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Dict, Final, List, Literal, Optional, Tuple, TypeAlias
+from typing import (Callable, Dict, Final, List, Literal, Optional, Tuple,
+                    TypeAlias)
 
 # noinspection Mypy
 import numpy as np

@@ -1,5 +1,4 @@
-import copy
-from queue import Queue
+import logging
 from typing import Any, Dict, List, Optional
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
@@ -11,8 +10,8 @@ class BFS(BaseAlgorithm):
 
     def __init__(self, neighbors_quality_order: str):
         self.closed_list: Dict[int, State] = {}  # mapping {hash(state): state}
-        self.neighbors_quality_order = neighbors_quality_order
-        self.frontier: Queue[State] = Queue()
+        self.neighbors_query_order = neighbors_quality_order
+        self.frontier: List[State] = []
 
     def solve(self, state: State) -> Optional[str]:
         # TODO: verify
@@ -31,31 +30,42 @@ class BFS(BaseAlgorithm):
         """
         # if initial state is the target state we don't even enter the loop
         if state.is_target_state():
+            logging.debug("Initial state is target state. Returning [].")
             return state.get_path_to_state()
+        else:
+            logging.debug(f"Add initial state to the frontier:\n{str(state)}.")
+            self.frontier.append(state)
 
-        tmp_state: State = state
-        while not tmp_state.is_target_state():
-            # Add the current node to frontier
-            self.frontier.enqueue(tmp_state)
-            # Get a list of all neighbors for the current node
-            neighbors: List[State] = tmp_state.get_neighbors()
-            # Sift out already visited neighbors
-            neighbors = list(filter(lambda x: x not in BFS.closed_list, neighbors))
-            # Add neighbors to the frontier list
-            self.frontier.extend(neighbors)
-            # For each neighbor check if it's the target state
-            for neighbor in neighbors:
-                if neighbor.is_target_state():
-                    return neighbor.get_path_to_state()
+            while self.frontier:
+                logging.debug(f"Frontier not empty, {len(self.frontier)} elements.")
 
-            # If none of the neighbors is the target:
-            # - add the current state to the closed list to avoid revisiting it
-            # - remove it from the frontier
-            self.closed_list.add(copy.deepcopy(tmp_state))
-            self.frontier.remove(tmp_state)
-            tmp_state = BFS.frontier[0]
-        return tmp_state.get_path_to_state()
+                examined_state = self.frontier.pop(0)
+                logging.debug(
+                    f"Popped first element from the queue:\n{examined_state}."
+                )
 
-    def visualize_solution(self) -> Any:
+                self.closed_list[hash(examined_state)] = examined_state
+                logging.debug(
+                    f"Added examined_state to the closed_list: {hash(examined_state)}:\n{examined_state}."
+                )
+
+                logging.debug(
+                    f"Examined state: {examined_state}. Available neighbors: {examined_state.get_neighbors(self.neighbors_query_order)}."
+                )
+                for neighbor in examined_state.get_neighbors(
+                    self.neighbors_query_order
+                ):
+                    if neighbor.is_target_state():
+                        logging.debug(f"Found target state among neighbors: {neighbor}")
+                        return neighbor.get_path_to_state()
+                    elif (
+                        neighbor in self.frontier or hash(neighbor) in self.closed_list
+                    ):
+                        logging.debug(f"Neighbor in open or closed list: {neighbor}")
+                        continue
+                    else:
+                        self.frontier.append(neighbor)
+
+    def visualize_solution(self, state: State) -> Any:
         # TODO: implement (maybe)
         pass
