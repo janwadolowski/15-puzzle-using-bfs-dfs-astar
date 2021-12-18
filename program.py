@@ -95,7 +95,7 @@ def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
     end_time = datetime.datetime.now()
     # Time difference between markers in milliseconds
     time_in_ms = (end_time - start_time).total_seconds() * 1000.0
-
+    
     write_to_solution_file(moves, output_solution)
     # TODO Uzupełnic parametr głębokość rekursji
     n_moves = -1

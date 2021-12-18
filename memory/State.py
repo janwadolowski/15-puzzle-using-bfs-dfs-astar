@@ -158,7 +158,7 @@ class State:
             )
             new_state_array: np.ndarray = self._swap_values(new_coords)
             logging.debug(
-                f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array={new_state_array}"
+                f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array=\n{new_state_array}"
             )
             return State(
                 state=new_state_array,
@@ -198,6 +198,16 @@ class State:
         else:
             path_to_state.append(self.preceding_operator)
             return self.parent.get_path_to_state()
+
+
+    def get_state_depth(self) -> int:
+        """Get state depth (ie. state without a parent)"""
+        if (
+                self.parent is None
+        ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
+            return 0
+        else:
+            return self.parent.get_state_depth()+1
 
     def __hash__(self) -> int:
         return hash(self.state.tobytes())
