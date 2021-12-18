@@ -7,7 +7,8 @@ from memory.State import State
 
 
 class BaseAlgorithm(ABC):
-    depth: int
+    max_depth: int
+    visited_states: int
     frontier: Queue[State] = field(default_factory=Queue)
     closed_list: Dict[int, State] = field(
         default_factory=dict

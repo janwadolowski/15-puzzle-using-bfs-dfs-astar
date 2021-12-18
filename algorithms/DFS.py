@@ -13,7 +13,8 @@ class DFS(BaseAlgorithm):
         self.neighbors_quality_order = neighbors_quality_order
         self.frontier: queue.LifoQueue[State] = queue.LifoQueue()
         self.closed_list: Dict[int, State] = {}
-        self.depth: int = 0
+        self.max_depth: int = 0
+        self.visited_states: int = 1
 
     """
     Steps of the algorithm:
@@ -62,9 +63,10 @@ class DFS(BaseAlgorithm):
 
             # For each neighbor check if is the target state
             for neighbor in neighbors:  # STEP 4.
+                self.visited_states += 1
                 if neighbor.is_target_state():
-                    self.depth = neighbor.get_state_depth()
-                    logging.debug(f"PUZZLE SOLVED - DEPTH={self.depth}")
+                    if self.max_depth < neighbor.get_state_depth(): self.max_depth = neighbor.get_state_depth()
+                    logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}")
                     return neighbor.get_path_to_state()  # STEP 5.
                 else:
                     self.frontier.put_nowait(neighbor)               # STEP 6.
@@ -76,8 +78,7 @@ class DFS(BaseAlgorithm):
             # Get last element from queue and check if it is on closed-list, if not start to explore
             while not self.frontier.empty():
                 tmp_state = self.frontier.get_nowait()              # STEP 8.
-                self.depth = tmp_state.get_state_depth()
-                if hash(tmp_state) not in self.closed_list.keys() and self.depth <= 20:
+                if hash(tmp_state) not in self.closed_list.keys() and tmp_state.get_state_depth() <= 20:
                     break
                 logging.debug(f"STATE ON CLOSED-LIST -> CONTINUE")
                 self.frontier.task_done()
