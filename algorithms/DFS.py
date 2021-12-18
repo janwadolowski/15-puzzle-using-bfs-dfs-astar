@@ -32,7 +32,7 @@ class DFS(BaseAlgorithm):
     :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle.
     If no solution has been found - return None
     """
-    #Pytania:
+    # Pytania:
     # 1. Zliczanie ilości ruchów do statystyk: czy błędne ruch też mają być zliczone, czy mają to być tylko ruchy właściwej ścieżki
     # 2. Zliczanie głębokości: jak właściwie zrobić, jako atrybut stanu nie może być, bo jest hashowany i zmienia to wartość więc trafia na close-liste jako inny stan
     # 3. Co powinien zawierać plik jak stan od razu jest docelowy > 0 ? (chyba nie powinno być tego przypadku w przykładach)
@@ -44,11 +44,13 @@ class DFS(BaseAlgorithm):
 
         if state.is_target_state():
             logging.debug(f"STARTING STATE = TARGET STATE")
-            return state.get_path_to_state()  # STEP 1.     # TODO sprawdzic co się stanie jad od razu będzie docelowym
+            return (
+                state.get_path_to_state()
+            )  # STEP 1.     # TODO sprawdzic co się stanie jad od razu będzie docelowym
 
         tmp_state: State = state
         # Add the start node to frontier queue, and pop for explore
-        self.frontier.put_nowait(tmp_state)                        # STEP 2.
+        self.frontier.put_nowait(tmp_state)  # STEP 2.
 
         while not self.frontier.empty():
             if first_run:
@@ -65,25 +67,29 @@ class DFS(BaseAlgorithm):
             for neighbor in neighbors:  # STEP 4.
                 self.visited_states += 1
                 if neighbor.is_target_state():
-                    if self.max_depth < neighbor.get_state_depth(): self.max_depth = neighbor.get_state_depth()
+                    if self.max_depth < neighbor.get_state_depth():
+                        self.max_depth = neighbor.get_state_depth()
                     logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}")
                     return neighbor.get_path_to_state()  # STEP 5.
                 else:
-                    self.frontier.put_nowait(neighbor)               # STEP 6.
+                    self.frontier.put_nowait(neighbor)  # STEP 6.
 
             # If none of the neighbors is the target - add the current state to the closed list to avoid revisiting it
-            self.closed_list[hash(tmp_state)] = tmp_state           # STEP 7.
+            self.closed_list[hash(tmp_state)] = tmp_state  # STEP 7.
             self.frontier.task_done()
 
             # Get last element from queue and check if it is on closed-list, if not start to explore
             while not self.frontier.empty():
-                tmp_state = self.frontier.get_nowait()              # STEP 8.
-                if hash(tmp_state) not in self.closed_list.keys() and tmp_state.get_state_depth() <= 20:
+                tmp_state = self.frontier.get_nowait()  # STEP 8.
+                if (
+                    hash(tmp_state) not in self.closed_list.keys()
+                    and tmp_state.get_state_depth() <= 20
+                ):
                     break
                 logging.debug(f"STATE ON CLOSED-LIST -> CONTINUE")
                 self.frontier.task_done()
 
-        return None                                                 # STEP 9.
+        return None  # STEP 9.
 
     def visualize_solution(self) -> Any:
         pass

@@ -188,21 +188,20 @@ class State:
         )
         return self == target_state
 
-    def get_path_to_state(self) -> str:
+    def get_path_to_state(self, path_to_state: List[str] = []) -> str:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
-        path_to_state: List[DIRECTIONS_ENUM] = []
         if (
-            self.parent is None
+            self.preceding_operator is None
         ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
             path_to_state.reverse()  # Because moves are listed last to first, and we want first to last
             return "".join(path_to_state)
         else:
-            path_to_state.append(self.preceding_operator)
+            path_to_state.append(self.preceding_operator[0].upper())
             return self.parent.get_path_to_state()
 
 
     def get_state_depth(self) -> int:
-        """Get state depth (ie. state without a parent)"""
+        """Get state depth (i.e. state without a parent)"""
         if (
                 self.parent is None
         ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion

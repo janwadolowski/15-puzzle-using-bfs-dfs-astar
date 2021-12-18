@@ -378,18 +378,6 @@ class TestState:
             ),
             "down": None,
         }
-        patch_left = mocker.patch(
-            target="memory.State.State.left", return_value=available_neighbors["left"]
-        )
-        patch_right = mocker.patch(
-            target="memory.State.State.right", return_value=available_neighbors["right"]
-        )
-        patch_up = mocker.patch(
-            target="memory.State.State.up", return_value=available_neighbors["up"]
-        )
-        patch_down = mocker.patch(
-            target="memory.State.State.down", return_value=available_neighbors["down"]
-        )
         neighbors: List[State] = state_bottom_left_corner.get_neighbors("LRUD")
 
         assert neighbors == [x for x in available_neighbors.values() if x is not None]
@@ -403,3 +391,33 @@ class TestState:
         assert (some_state.state == deepcopy.state).all()
         assert some_state.preceding_operator == deepcopy.preceding_operator
         assert some_state.parent is deepcopy.parent
+
+    def test_get_path_to_state(self, target_state):
+        grandgrandparent = State(
+            state=np.array(
+                [[1, 2, 3, 4], [5, 6, 0, 7], [9, 10, 11, 8], [13, 14, 15, 12]]
+            ),
+            parent=None,
+            preceding_operator=None,
+        )
+
+        grandparent = State(
+            state=np.array(
+                [[1, 2, 3, 4], [5, 6, 7, 0], [9, 10, 11, 8], [13, 14, 15, 12]]
+            ),
+            parent=grandgrandparent,
+            preceding_operator="right",
+        )
+
+        parent = State(
+            state=np.array(
+                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 0], [13, 14, 15, 12]]
+            ),
+            parent=grandparent,
+            preceding_operator="down",
+        )
+
+        target_state.preceding_operator = "down"
+        target_state.parent = parent
+
+        assert target_state.get_path_to_state() == "RDD"
