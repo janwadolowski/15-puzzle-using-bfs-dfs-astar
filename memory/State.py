@@ -48,8 +48,10 @@ class State:
                 # [[ '5',  '6',  '7',  '8'],
                 #  [ '9', '10', '11', '12'],
                 #  ['13', '14', '15',  '0']]
+                numpy_array_str = np.array(output_list_str)
+                numpy_array_int = numpy_array_str.astype(np.int32)
                 return State(
-                    state=np.array(output_list_str),
+                    state=numpy_array_int,
                     parent=None,
                 )
         except Exception as e:
