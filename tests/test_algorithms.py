@@ -1,8 +1,12 @@
+import logging
+
 import numpy as np
 import pytest
 
 from algorithms.BFS import BFS
 from memory.State import State
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class TestAlgorithms:
