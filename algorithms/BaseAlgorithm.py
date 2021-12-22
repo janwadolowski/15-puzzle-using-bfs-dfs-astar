@@ -1,20 +1,10 @@
 from abc import ABC, abstractmethod
-from dataclasses import field
-from queue import Queue
-from typing import Any, Dict
+from typing import Any
 
 from memory.State import State
 
 
 class BaseAlgorithm(ABC):
-    max_depth: int
-    visited_states: int
-    frontier: Queue[State] = field(default_factory=Queue)
-    closed_list: Dict[int, State] = field(
-        default_factory=dict
-    )  # mapping {hash(state): state}
-
-    @staticmethod
     @abstractmethod
     def solve(self, state: State) -> str:
         """
