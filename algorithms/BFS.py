@@ -8,7 +8,12 @@ from memory.State import State
 class BFS(BaseAlgorithm):
     """A class for Breadth First Search algorithm initialised with an algorithm parameter."""
 
-    def __init__(self, neighbors_quality_order: str):
+    def __init__(
+        self,
+        neighbors_quality_order: str,
+    ):
+        self.visited_states = 0
+        self.max_depth = 0
         self.closed_list: Dict[int, State] = {}  # mapping {hash(state): state}
         self.neighbors_query_order = neighbors_quality_order
         self.frontier: List[State] = []

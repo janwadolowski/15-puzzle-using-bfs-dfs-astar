@@ -69,7 +69,9 @@ class DFS(BaseAlgorithm):
                 if neighbor.is_target_state():
                     if self.max_depth < neighbor.get_state_depth():
                         self.max_depth = neighbor.get_state_depth()
-                    logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}")
+                    logging.debug(
+                        f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}"
+                    )
                     return neighbor.get_path_to_state()  # STEP 5.
                 else:
                     self.frontier.put_nowait(neighbor)  # STEP 6.
