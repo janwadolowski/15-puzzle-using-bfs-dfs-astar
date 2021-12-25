@@ -158,18 +158,18 @@ class State:
                 self._find_zero(), direction_coords
             )
             new_state_array: np.ndarray = self._swap_values(new_coords)
-            logging.debug(
-                f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array=\n{new_state_array}"
-            )
+            #logging.debug(
+            #    f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array=\n{new_state_array}"
+            #)
             return State(
                 state=new_state_array,
                 parent=self,
                 preceding_operator=direction
             )
         else:
-            logging.debug(
-                f"DEBUG: attempted move from coords: {self._find_zero()} in illegal direction: {direction}."
-            )
+            #logging.debug(
+            #    f"DEBUG: attempted move from coords: {self._find_zero()} in illegal direction: {direction}."
+            #)
             return None
 
     def get_neighbors(self, neighbors_query_order: str) -> List["State"]:

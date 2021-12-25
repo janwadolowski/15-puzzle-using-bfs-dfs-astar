@@ -45,7 +45,6 @@ def main() -> None:
         solve_puzzle(bfs, input_file_path, solution_file, stats_file)
 
     elif args.Strategy == "dfs":
-        print("Start DFS")
         dfs = DFS(args.Strategy_param)
         solve_puzzle(dfs, input_file_path, solution_file, stats_file)
 

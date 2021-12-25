@@ -43,10 +43,10 @@ class DFS(BaseAlgorithm):
         first_run = True
 
         if state.is_target_state():
-            logging.debug(f"STARTING STATE = TARGET STATE")
+            #logging.debug(f"STARTING STATE = TARGET STATE")
             return (
                 state.get_path_to_state()
-            )  # STEP 1.     # TODO sprawdzic co zwracać jak od razu będzie docelowym
+            )                                       # STEP 1.     # TODO sprawdzic co zwracać jak od razu będzie docelowym
 
         tmp_state: State = state
         # Add the start node to frontier queue, and pop for explore
@@ -63,32 +63,31 @@ class DFS(BaseAlgorithm):
             )
             neighbors.reverse()  # STEP 3.
 
+            self.closed_list[hash(tmp_state)] = tmp_state  # STEP 7.
+
             # For each neighbor check if is the target state
             for neighbor in neighbors:  # STEP 4.
                 self.visited_states += 1
+                if self.max_depth < neighbor.get_state_depth():
+                    self.max_depth = neighbor.get_state_depth()
                 if neighbor.is_target_state():
-                    if self.max_depth < neighbor.get_state_depth():
-                        self.max_depth = neighbor.get_state_depth()
                     logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}")
                     return neighbor.get_path_to_state()  # STEP 5.
                 else:
                     self.frontier.put_nowait(neighbor)  # STEP 6.
 
             # If none of the neighbors is the target - add the current state to the closed list to avoid revisiting it
-            self.closed_list[hash(tmp_state)] = tmp_state  # STEP 7.
+
             self.frontier.task_done()
 
             # Get last element from queue and check if it is on closed-list, if not start to explore
             while not self.frontier.empty():
                 tmp_state = self.frontier.get_nowait()  # STEP 8.
-                if (
-                    hash(tmp_state) not in self.closed_list.keys()
-                    and tmp_state.get_state_depth() <= 20
-                ):
+                if (hash(tmp_state) not in self.closed_list.keys() and tmp_state.get_state_depth() < 20):
                     break
-                logging.debug(f"STATE ON CLOSED-LIST -> CONTINUE")
+                #logging.debug(f"STATE ON CLOSED-LIST -> CONTINUE")
                 self.frontier.task_done()
-
+        logging.debug("PUZZLE NOT SOLVED")
         return None  # STEP 9.
 
     def visualize_solution(self) -> Any:
