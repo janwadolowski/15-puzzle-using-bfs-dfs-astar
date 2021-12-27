@@ -1,13 +1,18 @@
 import logging
-from typing import Any, List, Dict, Optional
+from typing import Any, Dict, List, Literal, Optional, TypeAlias
+
+from loguru import logger
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
-from memory.State import State
+from memory.State import TARGET_STATE, State
+
+HEURISTIC_TYPE: TypeAlias = Literal["hamm", "manh"]
 
 
 class AStar(BaseAlgorithm):
     """A class for A* algorithm initialised with algorithm parameters."""
-    def __init__(self, heuristic_type: str):
+
+    def __init__(self, heuristic_type: HEURISTIC_TYPE):
         self.heuristic_type = heuristic_type
         self.open_list: List[State] = []
         self.closed_list: Dict[int, State] = {}
