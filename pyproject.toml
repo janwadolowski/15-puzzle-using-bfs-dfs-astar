@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "sise"
+version = "0.1.0"
+description = "Solving a 15 puzzle"
+authors = ["Jan Wądołowski <janwadolowski@gmail.com>, Bartłomiej Kubiak <kubiakbartek90@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.21.5"
+typing = "^3.10.0"
+
+[tool.poetry.dev-dependencies]
+black = "^21.12b0"
+pytest = "^6.2.5"
+mypy = "^0.930"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
