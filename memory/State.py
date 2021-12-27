@@ -106,6 +106,15 @@ class State:
         diff: tuple[int, int] = State._diff_tuples(start, target)
         return diff[0] + diff[1]
 
+    def find_coords(self, tile: int) -> tuple[int, int] | None:
+        """Find coords of selected tile in a State."""
+        try:
+            return np.where(self.state == tile)[0][0], np.where(self.state == tile)[1][
+                0]  # coords are described per each subarray separately
+        except IndexError:
+            logger.error(f"Coords for tile {tile} not found.")
+            return None
+
     def _check_legal_move(self, change: Tuple[int, int]) -> bool:
         """Returns True if the operation up | down | left | right is valid else False"""
         zero_coords: Tuple[int, int] = self._find_zero()
@@ -165,7 +174,7 @@ class State:
             )
             new_state_array: np.ndarray = self._swap_values(new_coords)
             logger.debug(
-               f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array=\n{new_state_array}"
+                f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array=\n{new_state_array}"
             )
             return State(
                 state=new_state_array,

@@ -446,3 +446,12 @@ def test_diff_coords():
     a = (2, 3)
     b = (1, 0)
     assert State.diff_coords(a, b) == 4
+    assert State.diff_coords(b, a) == 4
+    assert State.diff_coords(a, a) == 0
+    assert State.diff_coords(b, b) == 0
+
+
+def test_find_coords(some_state):
+    assert some_state.find_coords(22) is None
+    assert some_state.find_coords(5) == (1, 0)
+    assert some_state.find_coords(10) == (3, 3)
