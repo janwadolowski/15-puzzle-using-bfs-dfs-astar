@@ -6,7 +6,7 @@ from loguru import logger
 
 from algorithms.DFS import DFS
 
-logger.add(sys.stderr, format="[{elapsed}] {level} {line}: {module}.{function}: {message}", level="DEBUG")
+logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="DEBUG")
 
 class TestIntegration:
     @pytest.fixture

@@ -9,7 +9,7 @@ from algorithms.BFS import BFS
 from memory.State import State
 
 logging.basicConfig(level=logging.DEBUG)
-logger.add(sys.stderr, format="[{elapsed}] {level} {line}: {module}.{function}: {message}", level="DEBUG")
+logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="DEBUG")
 
 
 class TestAlgorithms:
