@@ -90,7 +90,7 @@ class State:
 
     @staticmethod
     def _diff_tuples(
-        first: Tuple[int, int], second: Tuple[int, int]
+            first: Tuple[int, int], second: Tuple[int, int]
     ) -> Tuple[int, int]:
         """
         Calculates difference in coordinates between two tuples as a tuple with coordinates distance like so:
@@ -98,7 +98,13 @@ class State:
 
         _diff_tuples( (2, 3), (1, 1) ) -> (1, 2)
         """
-        return abs(first[1] - first[0]), second[1] - second[0]
+        return abs(second[0] - first[0]), abs(second[1] - first[1])
+
+    @staticmethod
+    def diff_coords(start: tuple[int, int], target: tuple[int, int]) -> int:
+        """Calculate a "distance" between two coords, i.e. how many moves are required at least to move a tyle from a(x, y) to b(p, q)."""
+        diff: tuple[int, int] = State._diff_tuples(start, target)
+        return diff[0] + diff[1]
 
     def _check_legal_move(self, change: Tuple[int, int]) -> bool:
         """Returns True if the operation up | down | left | right is valid else False"""
@@ -158,18 +164,18 @@ class State:
                 self._find_zero(), direction_coords
             )
             new_state_array: np.ndarray = self._swap_values(new_coords)
-            #logging.debug(
+            # logging.debug(
             #    f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array=\n{new_state_array}"
-            #)
+            # )
             return State(
                 state=new_state_array,
                 parent=self,
                 preceding_operator=direction
             )
         else:
-            #logging.debug(
+            # logging.debug(
             #    f"DEBUG: attempted move from coords: {self._find_zero()} in illegal direction: {direction}."
-            #)
+            # )
             return None
 
     def get_neighbors(self, neighbors_query_order: str) -> List["State"]:
@@ -194,14 +200,13 @@ class State:
         if path_to_state is None:
             path_to_state = []
         if (
-            self.preceding_operator is None
+                self.preceding_operator is None
         ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
             path_to_state.reverse()  # Because moves are listed last to first, and we want first to last
             return "".join(path_to_state)
         else:
             path_to_state.append(self.preceding_operator[0].upper())
             return self.parent.get_path_to_state(path_to_state)
-
 
     def get_state_depth(self) -> int:
         """Get state depth (i.e. state without a parent)"""
@@ -210,7 +215,7 @@ class State:
         ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
             return 0
         else:
-            return self.parent.get_state_depth()+1
+            return self.parent.get_state_depth() + 1
 
     def __hash__(self) -> int:
         return hash(self.state.tobytes())
