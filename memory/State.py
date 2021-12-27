@@ -55,8 +55,8 @@ class State:
                     state=array_of_int,
                     parent=None,
                 )
-        except Exception as e:
-            logging.error(e)
+        except IOError as e:
+            logger.error(e)
             raise e
 
     def get_state_shape(self) -> Tuple[int, int]:
@@ -174,7 +174,7 @@ class State:
             )
         else:
             logger.debug(
-               f"attempted move from coords: {self._find_zero()} in illegal direction: {direction}."
+                f"attempted move from coords: {self._find_zero()} in illegal direction: {direction}."
             )
             return None
 
