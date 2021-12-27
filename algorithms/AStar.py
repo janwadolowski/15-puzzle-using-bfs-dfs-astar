@@ -1,13 +1,18 @@
 import logging
-from typing import Any, List, Dict, Optional
+from typing import Any, Dict, List, Literal, Optional, TypeAlias
+
+from loguru import logger
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
-from memory.State import State
+from memory.State import TARGET_STATE, State
+
+HEURISTIC_TYPE: TypeAlias = Literal["hamm", "manh"]
 
 
 class AStar(BaseAlgorithm):
     """A class for A* algorithm initialised with algorithm parameters."""
-    def __init__(self, heuristic_type: str):
+
+    def __init__(self, heuristic_type: HEURISTIC_TYPE):
         self.heuristic_type = heuristic_type
         self.open_list: List[State] = []
         self.closed_list: Dict[int, State] = {}
@@ -26,7 +31,6 @@ class AStar(BaseAlgorithm):
         8. if neighbor is on closed-list with lower f(n) value -> skip, else -> add to open-list
         9. add processed node (state) to closed list
         10. if target state not found -> return None
-
         :param state: A starting state of the puzzle
         :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle.
         If no solution has been found - return None
@@ -45,7 +49,7 @@ class AStar(BaseAlgorithm):
             for st in self.open_list:
                 if tmp_state is None:
                     tmp_state = st
-                elif self.calculateF(tmp_state, self.heuristic_type) > self.calculateF(st, self.heuristic_type):
+                elif self.calculate_f(tmp_state) > self.calculate_f(st):
                     tmp_state = st
             self.open_list.remove(tmp_state)
 
@@ -56,13 +60,17 @@ class AStar(BaseAlgorithm):
                 if self.max_depth < neighbor.get_state_depth():
                     self.max_depth = neighbor.get_state_depth()
                 if neighbor.is_target_state():
-                    logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}")
+                    logging.debug(
+                        f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}"
+                    )
                     return neighbor.get_path_to_state()
                 else:
-                    f_neighbor = self.calculateF(neighbor, self.heuristic_type)
-                    if True: # TODO sprawdzić czy neighbor jest na open-list, jeśli tak i ma mniejszą wartość f(n) niż neighbor to skip
+                    f_neighbor = self.calculate_f(neighbor)
+                    if (
+                        True
+                    ):  # TODO sprawdzić czy neighbor jest na open-list, jeśli tak i ma mniejszą wartość f(n) niż neighbor to skip
                         pass
-                    else: # TODO sprawdzić czy neighbor jest na close-list, jeśli tak i ma mniejszą wartość f(n) niż neighbor to skip, inczej add to open-list
+                    else:  # TODO sprawdzić czy neighbor jest na close-list, jeśli tak i ma mniejszą wartość f(n) niż neighbor to skip, inaczej add to open-list
                         pass
 
             self.closed_list[hash(tmp_state)] = tmp_state
@@ -72,14 +80,27 @@ class AStar(BaseAlgorithm):
     def visualize_solution(self) -> Any:
         pass
 
-    def calculateF(self, state: State, heuristic: str) -> [int]:
+    def calculate_f(self, state: State) -> int:
+        # TODO: test if this works
+        """Calculate heuristic: a sum of state's depth and cumulative disorder of its elements."""
         g = state.get_state_depth()
         h = 0
-        if heuristic == 'hamm':
-            pass  # TODO napisać obliczenia heurystyki dla danej metryki
-        elif heuristic == 'manh':
-            pass
+
+        # Iterate over a State
+        for tile in state.state.flat:
+            # Count out 0 tile and tiles which are in target positions
+            self_tile_coords: tuple[int, int] = state.find_coords(tile)
+            target_tile_coords: tuple[int, int] = TARGET_STATE.find_coords(tile)
+            if tile != 0 and self_tile_coords != target_tile_coords:
+                # If manhattan heuristic calculate distance between tile's current coords, and it's target position
+                if self.heuristic_type == "manh":
+                    h += State.diff_coords(self_tile_coords, target_tile_coords)
+                # If Hamming metric only +1 increment when tile is not in target position
+                elif self.heuristic_type == "hamm":
+                    h += 1
+                # Other heuristics are not implemented
+                else:
+                    logger.error(f"Unsupported heuristics type: {self.heuristic_type}.")
+                    raise NotImplementedError
 
         return g + h
-
-

@@ -40,7 +40,6 @@ def main() -> None:
     input_file_path = os.path.realpath("./" + args.Input_file)
 
     if args.Strategy == "bfs":
-        print("Start BFS")
         bfs = BFS(args.Strategy_param)
         solve_puzzle(bfs, input_file_path, solution_file, stats_file)
 
@@ -49,7 +48,6 @@ def main() -> None:
         solve_puzzle(dfs, input_file_path, solution_file, stats_file)
 
     elif args.Strategy == "astr":
-        print("Start A*")
         astr = AStar(args.Strategy_param)
         solve_puzzle(astr, input_file_path, solution_file, stats_file)
 
@@ -64,7 +62,6 @@ def prepare_file(file_path: str):
 
 
 def write_to_solution_file(moves: str, sol_file) -> None:
-    # TODO how to check condition if puzzle was solved or not
     if moves is None:
         sol_file.write(str(-1))
     else:
@@ -96,7 +93,6 @@ def solve_puzzle(algorithm, input_file_path, output_solution, output_stats):
     time_in_ms = (end_time - start_time).total_seconds() * 1000.0
 
     write_to_solution_file(moves, output_solution)
-    # TODO Uzupełnic parametr głębokość rekursji
     n_moves = -1
     if moves is not None:
         n_moves = len(moves)

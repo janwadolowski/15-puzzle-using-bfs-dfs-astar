@@ -15,8 +15,10 @@ DIRECTIONS_ENUM: TypeAlias = Literal["left", "right", "up", "down"]
 @dataclass
 class State:
     state: np.ndarray
+    heuristic_value: int
     parent: Optional["State"] = None
     preceding_operator: Optional[DIRECTIONS_ENUM] = None
+
 
     def __post_init__(self):
         self.operations_str_mapping: Dict[str, Callable] = {
