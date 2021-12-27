@@ -8,7 +8,7 @@ import pytest
 from loguru import logger
 from pytest_mock import MockerFixture
 
-from memory.State import DIRECTIONS_ENUM, State
+from memory.State import DIRECTIONS_ENUM, TARGET_STATE, State
 
 logging.basicConfig(level=logging.DEBUG)
 logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="DEBUG")
@@ -19,16 +19,6 @@ def some_state():
     example_state: State = State(
         state=np.array(
             [[1, 2, 3, 4], [5, 6, 7, 8], [9, 0, 11, 12], [13, 14, 15, 10]]
-        )
-    )
-    yield example_state
-
-
-@pytest.fixture
-def target_state():
-    example_state: State = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
         )
     )
     yield example_state
@@ -403,9 +393,9 @@ def test_get_available_moves(
     assert neighbors == [x for x in available_neighbors.values() if x is not None]
 
 
-def test_is_target_state(target_state, some_state):
+def test_is_target_state(some_state):
     assert not some_state.is_target_state()
-    assert target_state.is_target_state()
+    assert TARGET_STATE.is_target_state()
 
 
 def test_deepcopy(some_state):

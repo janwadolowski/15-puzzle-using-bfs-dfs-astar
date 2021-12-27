@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import (Callable, Dict, Final, List, Literal, Optional, Tuple,
+from typing import (Callable, Dict, List, Literal, Optional, Tuple,
                     TypeAlias)
 
 # noinspection Mypy
@@ -188,12 +188,7 @@ class State:
         return available_moves
 
     def is_target_state(self) -> bool:
-        target_state: Final = State(
-            state=np.array(
-                [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
-            ),
-        )
-        return self == target_state
+        return self == TARGET_STATE
 
     def get_path_to_state(self, path_to_state: List[str] = None) -> str:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
@@ -244,3 +239,10 @@ class State:
             state=self.state.copy(),
             parent=self.parent,  # This in only referenced, not copied
         )
+
+
+TARGET_STATE = State(
+    state=np.array(
+        [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
+    )
+)
