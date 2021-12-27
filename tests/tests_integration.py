@@ -1,9 +1,12 @@
 import argparse
+import sys
 
 import pytest
+from loguru import logger
 
 from algorithms.DFS import DFS
 
+logger.add(sys.stderr, format="[{elapsed}] {level} {line}: {module}.{function}: {message}", level="DEBUG")
 
 class TestIntegration:
     @pytest.fixture
@@ -35,13 +38,3 @@ class TestIntegration:
     parser = argparse.ArgumentParser()
 
     parsed = parser.parse_args(['Strategy', 'dfs'])
-
-
-dfs
-RDUL
-4
-x4_01_00001.txt
-4
-x4_01_00001_dfs_rdul_sol.txt
-4
-x4_01_00001_dfs_rdul_stats.txt

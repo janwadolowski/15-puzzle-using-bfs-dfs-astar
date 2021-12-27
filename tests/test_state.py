@@ -1,14 +1,17 @@
 import copy
 import logging
+import sys
 from typing import List, Tuple
 
 import numpy as np
 import pytest
+from loguru import logger
 from pytest_mock import MockerFixture
 
 from memory.State import DIRECTIONS_ENUM, State
 
 logging.basicConfig(level=logging.DEBUG)
+logger.add(sys.stderr, format="[{elapsed}] {level} {line}: {module}.{function}: {message}", level="DEBUG")
 
 
 @pytest.fixture
