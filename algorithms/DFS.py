@@ -33,19 +33,18 @@ class DFS(BaseAlgorithm):
     If no solution has been found - return None
     """
     def solve(self, state: State) -> Optional[str]:
-        first_run = True
+        tmp_state: State = None
 
+        # Check if starting state is target state
         if state.is_target_state():
-            return state.get_path_to_state()  # STEP 1.
+            return state.get_path_to_state()
 
-        tmp_state: State = state
-        # Add the start node to frontier queue, and pop for explore
-        self.open_list.put_nowait(tmp_state)  # STEP 2.
+        # Add the start node to open_list queue, and pop for explore
+        self.open_list.put_nowait(state)
 
         while not self.open_list.empty():
-            if first_run:
+            if tmp_state is None:
                 tmp_state = self.open_list.get_nowait()
-                first_run = False
 
             # Get a list of all neighbors for the current node and reverse order
             neighbors: List[State] = tmp_state.get_neighbors(
@@ -53,32 +52,34 @@ class DFS(BaseAlgorithm):
             )
             neighbors.reverse()  # STEP 3.
 
-            self.closed_list[hash(tmp_state)] = tmp_state  # STEP 7.
+            # Add already explored state to closed_list
+            self.closed_list[hash(tmp_state)] = tmp_state
 
-            # For each neighbor check if is the target state
-            for neighbor in neighbors:  # STEP 4.
+            # For each neighbor check if:
+            for neighbor in neighbors:
                 self.visited_states += 1
                 if self.max_depth < neighbor.get_state_depth():
                     self.max_depth = neighbor.get_state_depth()
+                # if neighbor is target state, if true -> return
                 if neighbor.is_target_state():
                     logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}")
-                    return neighbor.get_path_to_state()  # STEP 5.
+                    return neighbor.get_path_to_state()
+                # else: add to open_list without chacking it's existance on list
                 else:
-                    self.open_list.put_nowait(neighbor)  # STEP 6.
+                    self.open_list.put_nowait(neighbor)
 
-            # If none of the neighbors is the target - add the current state to the closed list to avoid revisiting it
-
+            # Set the task on queue as done
             self.open_list.task_done()
 
-            # Get last element from queue and check if it is on closed-list, if not start to explore
+            # Get state from queue (LIFO order) and check if it is not on closed_list and depth is less then 20
+            # if true start to explore, else get next state ad check
             while not self.open_list.empty():
-                tmp_state = self.open_list.get_nowait()  # STEP 8.
+                tmp_state = self.open_list.get_nowait()
                 if hash(tmp_state) not in self.closed_list.keys() and tmp_state.get_state_depth() < 20:
                     break
-                #logging.debug(f"STATE ON CLOSED-LIST -> CONTINUE")
                 self.open_list.task_done()
         logging.debug("PUZZLE NOT SOLVED")
-        return None  # STEP 9.
+        return None
 
     def visualize_solution(self) -> Any:
         pass

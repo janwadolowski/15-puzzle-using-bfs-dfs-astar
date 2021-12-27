@@ -51,7 +51,8 @@ class AStar(BaseAlgorithm):
         while self.open_list:
             tmp_state: State = None
             tmp_key: int = None
-            # Search for the node(state) with the lowest value of f(n), and pop from open-list
+            # Search for the node(state) with the lowest value of f(n), and pop from open-list.
+            # if value f(n) is equal in multiple states, take frist occurance from left on the list
             for item in self.open_list.items():
                 if tmp_state is None:
                     tmp_key = item[0]
