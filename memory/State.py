@@ -15,7 +15,7 @@ DIRECTIONS_ENUM: TypeAlias = Literal["left", "right", "up", "down"]
 @dataclass
 class State:
     state: np.ndarray
-    heuristic_value: int
+    heuristic_value: Optional[int] = None
     parent: Optional["State"] = None
     preceding_operator: Optional[DIRECTIONS_ENUM] = None
 

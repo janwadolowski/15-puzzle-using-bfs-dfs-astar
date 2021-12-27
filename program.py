@@ -13,9 +13,9 @@ from memory.State import State
 
 logging.basicConfig(level=logging.DEBUG)
 # Write logs from program execution to a file
-logger.add(open(f"log_{datetime.datetime.now()}.txt", "w+"), format="[{elapsed}] {level} {line}: {module}.{function}: {message}", level="INFO")
+#logger.add(open(f"log_{datetime.datetime.now()}.txt", "w+"), format="[{elapsed}] {level} {line}: {module}.{function}: {message}", level="INFO")
 # And show error logs in terminal
-logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="ERROR")
+#logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="ERROR")
 
 
 def main() -> None:

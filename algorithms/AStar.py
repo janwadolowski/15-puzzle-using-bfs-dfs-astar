@@ -14,7 +14,7 @@ class AStar(BaseAlgorithm):
 
     def __init__(self, heuristic_type: HEURISTIC_TYPE):
         self.heuristic_type = heuristic_type
-        self.open_list: List[State] = []
+        self.open_list: Dict[int, State] = {}
         self.closed_list: Dict[int, State] = {}
         self.max_depth: int = 0
         self.visited_states: int = 1
@@ -25,12 +25,13 @@ class AStar(BaseAlgorithm):
         2. add first node (starting state) to open-list
         3. start loop until open-list is not empty or solution is found
         4. find the node (state) with the lowest value of f(n) = g(n) + h(n), and pop from open-list
-        5. find all possible neighbors, and loop for each: (#6 - #8)
-        6. if neighbor is target state -> return, else calculate f(n)
-        7. if neighbor is on open-list with lower f(n) value -> skip, else -> Step #8
-        8. if neighbor is on closed-list with lower f(n) value -> skip, else -> add to open-list
-        9. add processed node (state) to closed list
-        10. if target state not found -> return None
+        5. find all possible neighbors, and loop for each: (#7 - #10)
+        6. add processed node (state) to closed list
+        7. if neighbor is target state -> return
+        8. if neighbor is on open-list -> skip
+        9. if neighbor is on closed-list -> skip, 
+        10. if not on both lists -> calculate f(n) and add to open-list
+        11. if target state not found -> return None
         :param state: A starting state of the puzzle
         :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle.
         If no solution has been found - return None
@@ -38,42 +39,57 @@ class AStar(BaseAlgorithm):
 
     def solve(self, state: State) -> Optional[str]:
 
+        # Check if starting state is target state
         if state.is_target_state():
             return state.get_path_to_state()
 
-        self.open_list.append(state)
+        # Add first state to open_list
+        state.heuristic_value = self.calculate_f(state)
+        self.open_list[hash(state)] = state
 
-        while not self.open_list.empty():
+        # Loop until open_list is not empty
+        while self.open_list:
             tmp_state: State = None
-            # search for the node(state) with the lowest value of f(n), and remove from open-list
-            for st in self.open_list:
+            tmp_key: int = None
+            # Search for the node(state) with the lowest value of f(n), and pop from open-list
+            for item in self.open_list.items():
                 if tmp_state is None:
-                    tmp_state = st
-                elif self.calculate_f(tmp_state) > self.calculate_f(st):
-                    tmp_state = st
-            self.open_list.remove(tmp_state)
+                    tmp_key = item[0]
+                    tmp_state = item[1]
+                elif tmp_state.heuristic_value > item[1].heuristic_value:
+                    tmp_key = item[0]
+                    tmp_state = item[1]
+            self.open_list.pop(tmp_key)
 
+            # Get possible neighbors for state
             neighbors: List[State] = tmp_state.get_neighbors("LRUD")
 
+            # Add tmp_state to closed_list after checking neighbors
+            self.closed_list[tmp_key] = tmp_state
+
+            # For each neighbor from list
             for neighbor in neighbors:
                 self.visited_states += 1
                 if self.max_depth < neighbor.get_state_depth():
                     self.max_depth = neighbor.get_state_depth()
+
+                # Check if neighbor is target state and return if true
                 if neighbor.is_target_state():
                     logging.debug(
                         f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}"
                     )
                     return neighbor.get_path_to_state()
+                # Else: check if exists on open list (skip if true), check if exists on closed list (skip if true)
+                # if not on both lists then add to open list
                 else:
-                    f_neighbor = self.calculate_f(neighbor)
-                    if (
-                        True
-                    ):  # TODO sprawdzić czy neighbor jest na open-list, jeśli tak i ma mniejszą wartość f(n) niż neighbor to skip
-                        pass
-                    else:  # TODO sprawdzić czy neighbor jest na close-list, jeśli tak i ma mniejszą wartość f(n) niż neighbor to skip, inaczej add to open-list
-                        pass
-
-            self.closed_list[hash(tmp_state)] = tmp_state
+                    neighbor_hash = hash(neighbor)
+                    if neighbor_hash in self.open_list.keys():
+                        continue
+                    elif neighbor_hash in self.closed_list.keys():
+                        continue
+                    else:
+                        neighbor.heuristic_value = self.calculate_f(neighbor)
+                        self.open_list[neighbor_hash] = neighbor
 
         return None
 
