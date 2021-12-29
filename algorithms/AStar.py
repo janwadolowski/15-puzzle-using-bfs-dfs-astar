@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Literal, Optional, TypeAlias
+from typing import Dict, List, Literal, Optional, TypeAlias
 
 from loguru import logger
 
@@ -93,9 +93,6 @@ class AStar(BaseAlgorithm):
                         self.open_list[neighbor_hash] = neighbor
 
         return None
-
-    def visualize_solution(self) -> Any:
-        pass
 
     def calculate_f(self, state: State) -> int:
         # TODO: test if this works

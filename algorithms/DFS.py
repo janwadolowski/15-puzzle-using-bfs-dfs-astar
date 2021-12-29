@@ -1,6 +1,6 @@
 import logging
 import queue
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
@@ -86,6 +86,3 @@ class DFS(BaseAlgorithm):
                 self.open_list.task_done()
         logging.debug("PUZZLE NOT SOLVED")
         return None
-
-    def visualize_solution(self) -> Any:
-        pass

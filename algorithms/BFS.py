@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
@@ -70,7 +70,3 @@ class BFS(BaseAlgorithm):
                         continue
                     else:
                         self.frontier.append(neighbor)
-
-    def visualize_solution(self, state: State) -> Any:
-        # TODO: implement (maybe)
-        pass

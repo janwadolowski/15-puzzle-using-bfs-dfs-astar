@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
 from memory.State import State
 
@@ -14,9 +13,4 @@ class BaseAlgorithm(ABC):
         :return: a list of operations that leads to solving the puzzle as a string of characters
         symbolising four possible directions of moves L(EFT)|R(IGHT)|U(P)|D(OWN) i.e. "URRULDU"
         """
-        pass
-
-    @abstractmethod
-    def visualize_solution(self, state: State) -> Any:
-        # TODO: maybe
         pass
