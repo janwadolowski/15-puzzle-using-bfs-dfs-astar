@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import (Callable, Dict, List, Literal, Optional, Tuple,
-                    TypeAlias)
+from typing import Callable, Dict, List, Literal, Optional, Tuple, TypeAlias
 
 # noinspection Mypy
 import numpy as np
@@ -18,7 +17,6 @@ class State:
     heuristic_value: Optional[int] = None
     parent: Optional["State"] = None
     preceding_operator: Optional[DIRECTIONS_ENUM] = None
-
 
     def __post_init__(self):
         self.operations_str_mapping: Dict[str, Callable] = {
@@ -92,7 +90,7 @@ class State:
 
     @staticmethod
     def _diff_tuples(
-            first: Tuple[int, int], second: Tuple[int, int]
+        first: Tuple[int, int], second: Tuple[int, int]
     ) -> Tuple[int, int]:
         """
         Calculates difference in coordinates between two tuples as a tuple with coordinates distance like so:
@@ -111,8 +109,10 @@ class State:
     def find_coords(self, tile: int) -> tuple[int, int] | None:
         """Find coords of selected tile in a State."""
         try:
-            return np.where(self.state == tile)[0][0], np.where(self.state == tile)[1][
-                0]  # coords are described per each subarray separately
+            return (
+                np.where(self.state == tile)[0][0],
+                np.where(self.state == tile)[1][0],
+            )  # coords are described per each subarray separately
         except IndexError:
             logger.error(f"Coords for tile {tile} not found.")
             return None
@@ -179,9 +179,7 @@ class State:
                 f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array=\n{new_state_array}"
             )
             return State(
-                state=new_state_array,
-                parent=self,
-                preceding_operator=direction
+                state=new_state_array, parent=self, preceding_operator=direction
             )
         else:
             logger.debug(
@@ -206,7 +204,7 @@ class State:
         if path_to_state is None:
             path_to_state = []
         if (
-                self.preceding_operator is None
+            self.preceding_operator is None
         ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
             path_to_state.reverse()  # Because moves are listed last to first, and we want first to last
             return "".join(path_to_state)
@@ -217,7 +215,7 @@ class State:
     def get_state_depth(self) -> int:
         """Get state depth (i.e. state without a parent)"""
         if (
-                self.parent is None
+            self.parent is None
         ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
             return 0
         else:
@@ -253,7 +251,5 @@ class State:
 
 
 TARGET_STATE = State(
-    state=np.array(
-        [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
-    )
+    state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]])
 )

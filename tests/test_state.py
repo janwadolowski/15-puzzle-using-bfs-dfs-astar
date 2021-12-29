@@ -17,9 +17,7 @@ logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="D
 @pytest.fixture
 def some_state():
     example_state: State = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 7, 8], [9, 0, 11, 12], [13, 14, 15, 10]]
-        )
+        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 0, 11, 12], [13, 14, 15, 10]])
     )
     yield example_state
 
@@ -27,9 +25,7 @@ def some_state():
 @pytest.fixture
 def state_bottom_left_corner():
     example_state: State = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [0, 14, 15, 13]]
-        )
+        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [0, 14, 15, 13]])
     )
     yield example_state
 
@@ -37,9 +33,7 @@ def state_bottom_left_corner():
 @pytest.fixture
 def state_top_right_corner():
     example_state: State = State(
-        state=np.array(
-            [[1, 2, 3, 0], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 4]]
-        )
+        state=np.array([[1, 2, 3, 0], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 4]])
     )
     yield example_state
 
@@ -90,8 +84,8 @@ def test__swap_values(some_state):
     #  [13, 14, 15, 10]]        [13, 14, 15, 10]]
     new_state_array = some_state._swap_values((2, 2))
     assert (
-            new_state_array
-            == np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]])
+        new_state_array
+        == np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]])
     ).all()
 
 
@@ -103,9 +97,7 @@ def test_up(some_state, mocker: MockerFixture):
 
     # Patch internal function
     new_state_mocked = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]
-        ),
+        state=np.array([[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]),
         parent=some_state,
     )
     move_patch = mocker.patch(
@@ -127,9 +119,7 @@ def test_down(some_state, mocker: MockerFixture):
 
     # Patch internal function
     new_state_mocked = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 7, 8], [9, 14, 11, 12], [13, 0, 15, 10]]
-        ),
+        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 14, 11, 12], [13, 0, 15, 10]]),
         parent=some_state,
     )
     move_patch = mocker.patch(
@@ -151,9 +141,7 @@ def test_left(some_state, mocker: MockerFixture):
 
     # Patch internal function
     new_state_mocked = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 7, 8], [0, 9, 11, 12], [13, 14, 15, 10]]
-        ),
+        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [0, 9, 11, 12], [13, 14, 15, 10]]),
         parent=some_state,
     )
     move_patch = mocker.patch(
@@ -175,9 +163,7 @@ def test_right(some_state, mocker: MockerFixture):
 
     # Patch internal function
     new_state_mocked = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]]
-        ),
+        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]]),
         parent=some_state,
     )
     move_patch = mocker.patch(
@@ -204,12 +190,12 @@ testdata_top_right_corner = [
     "mocked_zero_coords, change, mocked_sum, expected", testdata_top_right_corner
 )
 def test__check_legal_move_top_right_corner(
-        state_top_right_corner: State,
-        mocker: MockerFixture,
-        mocked_zero_coords,
-        change,
-        mocked_sum,
-        expected,
+    state_top_right_corner: State,
+    mocker: MockerFixture,
+    mocked_zero_coords,
+    change,
+    mocked_sum,
+    expected,
 ):
     # Mocks
     find_zero_patch = mocker.patch(
@@ -238,12 +224,12 @@ testdata_bottom_left_corner = [
     "mocked_zero_coords, change, mocked_sum, expected", testdata_bottom_left_corner
 )
 def test__check_legal_move_bottom_left_corner(
-        state_bottom_left_corner: State,
-        mocker: MockerFixture,
-        mocked_zero_coords,
-        change,
-        mocked_sum,
-        expected,
+    state_bottom_left_corner: State,
+    mocker: MockerFixture,
+    mocked_zero_coords,
+    change,
+    mocked_sum,
+    expected,
 ):
     # Mocks
     find_zero_patch = mocker.patch(
@@ -292,12 +278,12 @@ directions_and_coords = [
     "direction, direction_coords, new_coords, swapped_array", directions_and_coords
 )
 def test__move_legal(
-        some_state,
-        mocker: MockerFixture,
-        direction: DIRECTIONS_ENUM,
-        direction_coords: Tuple[int, int],
-        new_coords: Tuple[int, int],
-        swapped_array: np.ndarray,
+    some_state,
+    mocker: MockerFixture,
+    direction: DIRECTIONS_ENUM,
+    direction_coords: Tuple[int, int],
+    new_coords: Tuple[int, int],
+    swapped_array: np.ndarray,
 ):
     # Mocks
     swapped_state = State(state=swapped_array, parent=some_state)
@@ -330,11 +316,11 @@ directions_and_coords = [
     "direction, direction_coords, new_coords", directions_and_coords
 )
 def test__move_illegal(
-        state_bottom_left_corner: State,
-        mocker: MockerFixture,
-        direction: DIRECTIONS_ENUM,
-        direction_coords: Tuple[int, int],
-        new_coords: Tuple[int, int],
+    state_bottom_left_corner: State,
+    mocker: MockerFixture,
+    direction: DIRECTIONS_ENUM,
+    direction_coords: Tuple[int, int],
+    new_coords: Tuple[int, int],
 ):
     # Mocks
     check_legal_move_patch = mocker.patch(
@@ -365,14 +351,12 @@ adding_tuples = [
 
 @pytest.mark.parametrize("first, second, expected", adding_tuples)
 def test__sum_tuples(
-        first: Tuple[int, int], second: Tuple[int, int], expected: Tuple[int, int]
+    first: Tuple[int, int], second: Tuple[int, int], expected: Tuple[int, int]
 ):
     assert State._sum_tuples(first, second) == expected
 
 
-def test_get_available_moves(
-        state_bottom_left_corner: State
-):
+def test_get_available_moves(state_bottom_left_corner: State):
     # Mocks
     available_neighbors = {
         "left": None,
@@ -407,25 +391,19 @@ def test_deepcopy(some_state):
 
 def test_get_path_to_state(target_state):
     grandgrandparent = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 0, 7], [9, 10, 11, 8], [13, 14, 15, 12]]
-        ),
+        state=np.array([[1, 2, 3, 4], [5, 6, 0, 7], [9, 10, 11, 8], [13, 14, 15, 12]]),
         parent=None,
         preceding_operator=None,
     )
 
     grandparent = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 7, 0], [9, 10, 11, 8], [13, 14, 15, 12]]
-        ),
+        state=np.array([[1, 2, 3, 4], [5, 6, 7, 0], [9, 10, 11, 8], [13, 14, 15, 12]]),
         parent=grandgrandparent,
         preceding_operator="right",
     )
 
     parent = State(
-        state=np.array(
-            [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 0], [13, 14, 15, 12]]
-        ),
+        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 0], [13, 14, 15, 12]]),
         parent=grandparent,
         preceding_operator="down",
     )

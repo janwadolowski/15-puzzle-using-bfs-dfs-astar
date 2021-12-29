@@ -32,6 +32,7 @@ class DFS(BaseAlgorithm):
     :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle.
     If no solution has been found - return None
     """
+
     def solve(self, state: State) -> Optional[str]:
         tmp_state: State = None
 
@@ -62,7 +63,9 @@ class DFS(BaseAlgorithm):
                     self.max_depth = neighbor.get_state_depth()
                 # if neighbor is target state, if true -> return
                 if neighbor.is_target_state():
-                    logging.debug(f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}")
+                    logging.debug(
+                        f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}"
+                    )
                     return neighbor.get_path_to_state()
                 # else: add to open_list without chacking it's existance on list
                 else:
@@ -75,7 +78,10 @@ class DFS(BaseAlgorithm):
             # if true start to explore, else get next state ad check
             while not self.open_list.empty():
                 tmp_state = self.open_list.get_nowait()
-                if hash(tmp_state) not in self.closed_list.keys() and tmp_state.get_state_depth() < 20:
+                if (
+                    hash(tmp_state) not in self.closed_list.keys()
+                    and tmp_state.get_state_depth() < 20
+                ):
                     break
                 self.open_list.task_done()
         logging.debug("PUZZLE NOT SOLVED")
