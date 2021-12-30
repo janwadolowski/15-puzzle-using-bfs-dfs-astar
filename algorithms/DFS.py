@@ -50,7 +50,7 @@ class DFS(BaseAlgorithm):
             neighbors: List[State] = tmp_state.get_neighbors(
                 self.neighbors_quality_order
             )
-            neighbors.reverse()  # STEP 3.
+            neighbors.reverse()
 
             # Add already explored state to closed_list
             self.closed_list[hash(tmp_state)] = tmp_state
