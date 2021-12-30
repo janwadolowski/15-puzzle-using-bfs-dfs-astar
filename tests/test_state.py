@@ -8,16 +8,18 @@ import pytest
 from loguru import logger
 from pytest_mock import MockerFixture
 
-from memory.State import DIRECTIONS_ENUM, TARGET_STATE, State
+from memory.State import DIRECTION, State
 
 logging.basicConfig(level=logging.DEBUG)
 logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="DEBUG")
+
+ref_path_state = "memory.State.State"
 
 
 @pytest.fixture
 def some_state():
     example_state: State = State(
-        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 0, 11, 12], [13, 14, 15, 10]])
+        array=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 0, 11, 12], [13, 14, 15, 10]])
     )
     yield example_state
 
@@ -25,7 +27,7 @@ def some_state():
 @pytest.fixture
 def state_bottom_left_corner():
     example_state: State = State(
-        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [0, 14, 15, 13]])
+        array=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [0, 14, 15, 13]])
     )
     yield example_state
 
@@ -33,7 +35,7 @@ def state_bottom_left_corner():
 @pytest.fixture
 def state_top_right_corner():
     example_state: State = State(
-        state=np.array([[1, 2, 3, 0], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 4]])
+        array=np.array([[1, 2, 3, 0], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 4]])
     )
     yield example_state
 
@@ -45,16 +47,16 @@ def test_create_state():
     child_array = np.array(
         [[10, 9, 8, 7], [15, 14, 13, 0], [12, 11, 6, 5], [4, 3, 2, 1]]
     )
-    test_parent_state = State(state=parent_array)
+    test_parent_state = State(array=parent_array)
     test_state = State(
-        state=child_array,
+        array=child_array,
         parent=test_parent_state,
     )
 
-    assert (test_parent_state.state == parent_array).all()
+    assert (test_parent_state.array == parent_array).all()
     assert test_parent_state.parent is None
 
-    assert (test_state.state == child_array).all()
+    assert (test_state.array == child_array).all()
     assert test_state.parent is test_parent_state
 
 
@@ -62,7 +64,7 @@ def test_load_state():
     EXAMPLE_FRAME_PATH: str = "./Resources/ramka1_4x4.txt"
     test_state = State.load_state(filepath=EXAMPLE_FRAME_PATH)
     assert type(test_state) is State
-    assert test_state.state.shape == (4, 4)
+    assert test_state.array.shape == (4, 4)
 
 
 def test_get_state_shape(some_state):
@@ -97,11 +99,11 @@ def test_up(some_state, mocker: MockerFixture):
 
     # Patch internal function
     new_state_mocked = State(
-        state=np.array([[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]),
+        array=np.array([[1, 2, 3, 4], [5, 0, 7, 8], [9, 6, 11, 12], [13, 14, 15, 10]]),
         parent=some_state,
     )
     move_patch = mocker.patch(
-        target="memory.State.State._move", return_value=new_state_mocked
+        target=f"{ref_path_state}._move", return_value=new_state_mocked
     )
 
     new_state = some_state.up()
@@ -119,11 +121,11 @@ def test_down(some_state, mocker: MockerFixture):
 
     # Patch internal function
     new_state_mocked = State(
-        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 14, 11, 12], [13, 0, 15, 10]]),
+        array=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 14, 11, 12], [13, 0, 15, 10]]),
         parent=some_state,
     )
     move_patch = mocker.patch(
-        target="memory.State.State._move", return_value=new_state_mocked
+        target=f"{ref_path_state}._move", return_value=new_state_mocked
     )
 
     new_state = some_state.down()
@@ -141,11 +143,11 @@ def test_left(some_state, mocker: MockerFixture):
 
     # Patch internal function
     new_state_mocked = State(
-        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [0, 9, 11, 12], [13, 14, 15, 10]]),
+        array=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [0, 9, 11, 12], [13, 14, 15, 10]]),
         parent=some_state,
     )
     move_patch = mocker.patch(
-        target="memory.State.State._move", return_value=new_state_mocked
+        target=f"{ref_path_state}._move", return_value=new_state_mocked
     )
 
     new_state = some_state.left()
@@ -163,11 +165,11 @@ def test_right(some_state, mocker: MockerFixture):
 
     # Patch internal function
     new_state_mocked = State(
-        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]]),
+        array=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 11, 0, 12], [13, 14, 15, 10]]),
         parent=some_state,
     )
     move_patch = mocker.patch(
-        target="memory.State.State._move", return_value=new_state_mocked
+        target=f"{ref_path_state}._move", return_value=new_state_mocked
     )
 
     new_state = some_state.right()
@@ -199,10 +201,10 @@ def test__check_legal_move_top_right_corner(
 ):
     # Mocks
     find_zero_patch = mocker.patch(
-        target="memory.State.State._find_zero", return_value=mocked_zero_coords
+        target=f"{ref_path_state}._find_zero", return_value=mocked_zero_coords
     )
     sum_tuples_patch = mocker.patch(
-        target="memory.State.State._sum_tuples", return_value=mocked_sum
+        target=f"{ref_path_state}._sum_tuples", return_value=mocked_sum
     )
     result = state_top_right_corner._check_legal_move(change)
 
@@ -233,10 +235,10 @@ def test__check_legal_move_bottom_left_corner(
 ):
     # Mocks
     find_zero_patch = mocker.patch(
-        target="memory.State.State._find_zero", return_value=mocked_zero_coords
+        target=f"{ref_path_state}._find_zero", return_value=mocked_zero_coords
     )
     sum_tuples_patch = mocker.patch(
-        target="memory.State.State._sum_tuples", return_value=mocked_sum
+        target=f"{ref_path_state}._sum_tuples", return_value=mocked_sum
     )
     result = state_bottom_left_corner._check_legal_move(change)
 
@@ -280,21 +282,21 @@ directions_and_coords = [
 def test__move_legal(
     some_state,
     mocker: MockerFixture,
-    direction: DIRECTIONS_ENUM,
+    direction: DIRECTION,
     direction_coords: Tuple[int, int],
     new_coords: Tuple[int, int],
     swapped_array: np.ndarray,
 ):
     # Mocks
-    swapped_state = State(state=swapped_array, parent=some_state)
+    swapped_state = State(array=swapped_array, parent=some_state)
     check_legal_move_patch = mocker.patch(
-        target="memory.State.State._check_legal_move", return_value=True
+        target=f"{ref_path_state}._check_legal_move", return_value=True
     )
     find_zero_patch = mocker.patch(
-        target="memory.State.State._find_zero", return_value=(2, 1)
+        target=f"{ref_path_state}._find_zero", return_value=(2, 1)
     )
     swap_values_patch = mocker.patch(
-        target="memory.State.State._swap_values", return_value=swapped_array
+        target=f"{ref_path_state}._swap_values", return_value=swapped_array
     )
 
     new_state: State = some_state._move(direction)
@@ -318,17 +320,17 @@ directions_and_coords = [
 def test__move_illegal(
     state_bottom_left_corner: State,
     mocker: MockerFixture,
-    direction: DIRECTIONS_ENUM,
+    direction: DIRECTION,
     direction_coords: Tuple[int, int],
     new_coords: Tuple[int, int],
 ):
     # Mocks
     check_legal_move_patch = mocker.patch(
-        target="memory.State.State._check_legal_move", return_value=False
+        target=f"{ref_path_state}._check_legal_move", return_value=False
     )
-    sum_tuples_patch = mocker.patch(target="memory.State.State._sum_tuples")
-    find_zero_patch = mocker.patch(target="memory.State.State._find_zero")
-    swap_values_patch = mocker.patch(target="memory.State.State._swap_values")
+    sum_tuples_patch = mocker.patch(target=f"{ref_path_state}._sum_tuples")
+    find_zero_patch = mocker.patch(target=f"{ref_path_state}._find_zero")
+    swap_values_patch = mocker.patch(target=f"{ref_path_state}._swap_values")
 
     new_state: State = state_bottom_left_corner._move(direction)
 
@@ -361,12 +363,12 @@ def test_get_available_moves(state_bottom_left_corner: State):
     available_neighbors = {
         "left": None,
         "right": State(
-            state=np.array(
+            array=np.array(
                 [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [14, 0, 15, 13]]
             )
         ),
         "up": State(
-            state=np.array(
+            array=np.array(
                 [[1, 2, 3, 4], [5, 6, 7, 8], [0, 10, 11, 12], [9, 14, 15, 13]]
             )
         ),
@@ -379,31 +381,31 @@ def test_get_available_moves(state_bottom_left_corner: State):
 
 def test_is_target_state(some_state):
     assert not some_state.is_target_state()
-    assert TARGET_STATE.is_target_state()
+    assert some_state.TARGET_STATE.is_target_state()
 
 
 def test_deepcopy(some_state):
     deepcopy = copy.deepcopy(some_state)
-    assert (some_state.state == deepcopy.state).all()
+    assert (some_state.array == deepcopy.array).all()
     assert some_state.preceding_operator == deepcopy.preceding_operator
     assert some_state.parent is deepcopy.parent
 
 
 def test_get_path_to_state(target_state):
     grandgrandparent = State(
-        state=np.array([[1, 2, 3, 4], [5, 6, 0, 7], [9, 10, 11, 8], [13, 14, 15, 12]]),
+        array=np.array([[1, 2, 3, 4], [5, 6, 0, 7], [9, 10, 11, 8], [13, 14, 15, 12]]),
         parent=None,
         preceding_operator=None,
     )
 
     grandparent = State(
-        state=np.array([[1, 2, 3, 4], [5, 6, 7, 0], [9, 10, 11, 8], [13, 14, 15, 12]]),
+        array=np.array([[1, 2, 3, 4], [5, 6, 7, 0], [9, 10, 11, 8], [13, 14, 15, 12]]),
         parent=grandgrandparent,
         preceding_operator="right",
     )
 
     parent = State(
-        state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 0], [13, 14, 15, 12]]),
+        array=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 0], [13, 14, 15, 12]]),
         parent=grandparent,
         preceding_operator="down",
     )
