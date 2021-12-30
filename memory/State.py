@@ -8,7 +8,7 @@ from loguru import logger
 
 from Exception import InvalidCoordinatesException
 
-DIRECTIONS_ENUM: TypeAlias = Literal["left", "right", "up", "down"]
+DIRECTION: TypeAlias = Literal["left", "right", "up", "down"]
 
 
 @dataclass
@@ -16,7 +16,7 @@ class State:
     array: np.ndarray
     heuristic_value: int | None = None
     parent: Optional["State"] = None
-    preceding_operator: Optional[DIRECTIONS_ENUM] = None
+    preceding_operator: DIRECTION | None = None
 
     def __post_init__(self):
         self.operations_str_mapping: Dict[str, Callable] = {
@@ -156,7 +156,7 @@ class State:
             swapped[a], swapped[b] = swapped[b], swapped[a]
             return swapped
 
-    def _move(self, direction: DIRECTIONS_ENUM) -> Optional["State"]:
+    def _move(self, direction: DIRECTION) -> Optional["State"]:
         """
         Return a new State with 0 moved in a direction passed as parameter. If move is not possible return None.
 

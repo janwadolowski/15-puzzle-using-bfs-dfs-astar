@@ -53,10 +53,10 @@ class AStar(BaseAlgorithm):
             # Search for the node(State) with the lowest value of f(n), and pop from open-list.
             # if value f(n) is equal in multiple states, take first occurrence from left on the list
             for item in self.open_list.items():
-                if tmp_state is None:
-                    tmp_key = item[0]
-                    tmp_state = item[1]
-                elif tmp_state.heuristic_value > item[1].heuristic_value:
+                if (
+                    tmp_state is None
+                    or tmp_state.heuristic_value > item[1].heuristic_value
+                ):
                     tmp_key = item[0]
                     tmp_state = item[1]
             self.open_list.pop(tmp_key)
