@@ -102,7 +102,7 @@ class AStar(BaseAlgorithm):
         for tile in state.array.flat:
             # Count out 0 tile and tiles which are in target positions
             self_tile_coords: tuple[int, int] = state.find_coords(tile)
-            target_tile_coords: tuple[int, int] = TARGET_STATE.find_coords(tile)
+            target_tile_coords: tuple[int, int] = state.target_state.find_coords(tile)
             if tile != 0 and self_tile_coords != target_tile_coords:
                 # If manhattan heuristic calculate distance between tile's current coords, and it's target position
                 if self.heuristic_type == "manh":

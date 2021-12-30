@@ -26,6 +26,10 @@ class State:
             "D": self.down,
         }
 
+    @property
+    def target_state(self):
+        return self._generate_target_state()
+
     @staticmethod
     def load_state(filepath: str) -> Optional["State"]:
         """
@@ -201,14 +205,17 @@ class State:
                 available_moves.append(available)
         return available_moves
 
-    def is_target_state(self) -> bool:
+    def _generate_target_state(self) -> "State":
         """
-        Method to compare to a target state.
+        Method to create a target State (i.e. a 2D array with consecutive numbers 1...n-1 and 0 at the end) based on object's array.
 
-        Comparison is done simply with __eq__(), however,
-        the target state is generated to support States of various shapes and sizes.
+        An example target state for 4x4 array:
+        [[ 1,  2,  3,  4],
+         [ 5,  6,  7,  8],
+         [ 9, 10, 11, 12],
+         [13, 14, 15,  0]]
         """
-        num_range = len(self.state.flat)  # how many numbers are
+        num_range = len(self.array.flat)  # how many numbers are
         target_state = np.arange(
             1, num_range + 1
         )  # first create a 1D array 1...n (n is length of a flattened array we compare with)
