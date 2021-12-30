@@ -197,7 +197,23 @@ class State:
         return available_moves
 
     def is_target_state(self) -> bool:
-        return self == TARGET_STATE
+        """
+        Method to compare to a target state.
+
+        Comparison is done simply with __eq__(), however,
+        the target state is generated to support States of various shapes and sizes.
+        """
+        num_range = len(self.state.flat)  # how many numbers are
+        target_state = np.arange(
+            1, num_range + 1
+        )  # first create a 1D array 1...n (n is length of a flattened array we compare with)
+        target_state[
+            num_range
+        ] = 0  # replace last value with 0 symbolising an empty tile
+        target_state.reshape(
+            self.state.shape
+        )  # reshape the 1D array of consecutive numbers with 0 at the end to match the shape of array we compare with
+        return self == State(state=target_state)
 
     def get_path_to_state(self, path_to_state: List[str] = None) -> str:
         """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
@@ -231,7 +247,6 @@ class State:
             return (self.state == other.state).all()
 
     def __deepcopy__(self, memo=None) -> "State":
-        # TODO do we need this?
         """
         Method to deep copy an object.
 
@@ -248,8 +263,3 @@ class State:
             state=self.state.copy(),
             parent=self.parent,  # This in only referenced, not copied
         )
-
-
-TARGET_STATE = State(
-    state=np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]])
-)
