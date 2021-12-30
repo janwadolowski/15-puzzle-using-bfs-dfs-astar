@@ -16,7 +16,7 @@ class TestAlgorithms:
     @pytest.fixture
     def some_state(self):
         example_state: State = State(
-            state=np.array(
+            array=np.array(
                 [[2, 0, 3, 6], [1, 9, 7, 8], [14, 10, 15, 12], [5, 13, 11, 4]]
             )
         )

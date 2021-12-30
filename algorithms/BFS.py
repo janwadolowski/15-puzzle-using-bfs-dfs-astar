@@ -15,25 +15,25 @@ class BFS(BaseAlgorithm):
     ):
         self.visited_states = 0
         self.max_depth = 0
-        self.closed_list: Dict[int, State] = {}  # mapping {hash(state): state}
+        self.closed_list: Dict[int, State] = {}  # mapping {hash(State): State}
         self.neighbors_query_order = neighbors_quality_order
         self.frontier: Deque[State] = deque()
 
     def solve(self, state: State) -> Optional[str]:
         """
         Steps of the algorithm:
-        1. check if a state is the target state, if yes return, no moves need to be taken as the initial state is the target state, else:
-        2. check if a state is in the closed list, if yes skip it, else proceed
-        3. add state to frontier
+        1. check if a State is the target array, if yes return, no moves need to be taken as the initial State is the target State, else:
+        2. check if a State is in the closed list, if yes skip it, else proceed
+        3. add a State to frontier
         4. get a list of possible neighbors
         5. iterating over neighbors list do steps 1 -4
-        6. if all neighbors have been visited add the state to the closed list
+        6. if all neighbors have been visited add the State to the closed list
 
-        :param state: A starting state of the puzzle
-        :return: A list of consecutive operations conducted on an initial state to achieve a target state -- a solved puzzle.
+        :param state: An initial State of the puzzle
+        :return: A list of consecutive operations conducted on an initial State to achieve a target State -- a solved puzzle.
                  If no solution has been found - return None
         """
-        # if initial state is the target state we don't even enter the loop
+        # if initial State is the target State we don't even enter the loop
         if state.is_target_state():
             logging.info("Initial state is target state. Returning [].")
             return state.get_path_to_state()

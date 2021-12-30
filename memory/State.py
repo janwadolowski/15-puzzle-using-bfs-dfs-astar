@@ -13,8 +13,8 @@ DIRECTIONS_ENUM: TypeAlias = Literal["left", "right", "up", "down"]
 
 @dataclass
 class State:
-    state: np.ndarray
-    heuristic_value: Optional[int] = None
+    array: np.ndarray
+    heuristic_value: int | None = None
     parent: Optional["State"] = None
     preceding_operator: Optional[DIRECTIONS_ENUM] = None
 
@@ -52,7 +52,7 @@ class State:
                 array_of_str = np.array(output_list_str)
                 array_of_int = array_of_str.astype(np.int32)
                 return State(
-                    state=array_of_int,
+                    array=array_of_int,
                     parent=None,
                 )
         except IOError as e:
@@ -60,7 +60,7 @@ class State:
             raise e
 
     def get_state_shape(self) -> Tuple[int, int]:
-        return self.state.shape
+        return self.array.shape
 
     def up(self) -> Optional["State"]:
         """Get a State and return a new one with 0 moved up or None if a move is illegal"""
@@ -80,7 +80,7 @@ class State:
 
     def _find_zero(self) -> Tuple[int, int]:
         """Return zero-based coordinates for 0 tile as a tuple (<row>, <column>)"""
-        a, b = np.where(self.state == 0)
+        a, b = np.where(self.array == 0)
         return int(a), int(b)  # Explicit casting for mypy
 
     @staticmethod
@@ -110,8 +110,8 @@ class State:
         """Find coords of selected tile in a State."""
         try:
             return (
-                np.where(self.state == tile)[0][0],
-                np.where(self.state == tile)[1][0],
+                np.where(self.array == tile)[0][0],
+                np.where(self.array == tile)[1][0],
             )  # coords are described per each subarray separately
         except IndexError:
             logger.error(f"Coords for tile {tile} not found.")
@@ -122,7 +122,7 @@ class State:
         zero_coords: Tuple[int, int] = self._find_zero()
         summed: Tuple[int, int] = self._sum_tuples(zero_coords, change)
 
-        rows_len, columns_len = self.state.shape
+        rows_len, columns_len = self.array.shape
 
         if summed[0] < 0 or summed[0] >= columns_len:
             return False
@@ -144,10 +144,15 @@ class State:
         coords_diff = (abs(coords_diff[0]), abs(coords_diff[1]))
         # Can only move 1 index in any direction, if coords are too far apart raise an error
         if coords_diff not in [(0, 1), (1, 0)]:
-            raise InvalidCoordinatesException("Coordinates are too far from each other")
+            logger.error(
+                f"Coordinates {a} and {b} are too far from each other to swap."
+            )
+            raise InvalidCoordinatesException(
+                "Coordinates are too far from each other to swap."
+            )
         else:
-            swapped = np.copy(self.state)
-            # a, b = b, a -- this works in python as intended, ie. swaps both values
+            swapped = np.copy(self.array)
+            # a, b = b, a -- this works in python as intended, i.e. swaps both values
             swapped[a], swapped[b] = swapped[b], swapped[a]
             return swapped
 
@@ -169,7 +174,7 @@ class State:
             case "down":
                 direction_coords = (1, 0)
 
-        # If valid direction and the move is legal (within the state array boundaries) proceed
+        # If valid direction and the move is legal (within the State array boundaries) proceed
         if direction_coords and self._check_legal_move(direction_coords):
             new_coords: tuple[int, int] = State._sum_tuples(
                 self._find_zero(), direction_coords
@@ -179,7 +184,7 @@ class State:
                 f"_move executed with direction={direction}, direction_coords={direction_coords}, new_coords={new_coords}, new_state_array=\n{new_state_array}"
             )
             return State(
-                state=new_state_array, parent=self, preceding_operator=direction
+                array=new_state_array, parent=self, preceding_operator=direction
             )
         else:
             logger.debug(
@@ -216,7 +221,7 @@ class State:
         return self == State(state=target_state)
 
     def get_path_to_state(self, path_to_state: List[str] = None) -> str:
-        """Get a list of operations required to reach a current state from the first state (ie. state without a parent)"""
+        """Get a list of operations required to reach a current State from the first State (i.e. State without a parent)"""
         if path_to_state is None:
             path_to_state = []
         if (
@@ -229,7 +234,7 @@ class State:
             return self.parent.get_path_to_state(path_to_state)
 
     def get_state_depth(self) -> int:
-        """Get state depth (i.e. state without a parent)"""
+        """Get State's depth."""
         if (
             self.parent is None
         ):  # If node doesn't have a parent it means it's the root (initial) node,which signals end of recursion
@@ -238,28 +243,28 @@ class State:
             return self.parent.get_state_depth() + 1
 
     def __hash__(self) -> int:
-        return hash(self.state.tobytes())
+        return hash(self.array.tobytes())
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, self.__class__):
             return NotImplemented
         else:
-            return (self.state == other.state).all()
+            return (self.array == other.array).all()
 
     def __deepcopy__(self, memo=None) -> "State":
         """
         Method to deep copy an object.
 
         It's not a full deep copy as for the purpose of the algorithm
-        we only need to deep copy the state (numpy.ndarray)
-        but we can only reference the parent state.
+        we only need to deep copy the array (numpy.ndarray)
+        but we can only reference the parent State.
 
-        :return: A deep copy of an object with referenced parent state
+        :return: A deep copy of an object with referenced parent array
         """
         # TODO: how to handle memo properly?
         if not memo:
             memo = {}
         return State(
-            state=self.state.copy(),
+            array=self.array.copy(),
             parent=self.parent,  # This in only referenced, not copied
         )
