@@ -1,6 +1,7 @@
-import logging
 from collections import deque
 from typing import Deque, Dict, Optional
+
+from loguru import logger
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
 from memory.State import State
@@ -35,41 +36,41 @@ class BFS(BaseAlgorithm):
         """
         # if initial State is the target State we don't even enter the loop
         if state.is_target_state():
-            logging.info("Initial state is target state. Returning [].")
+            logger.info("Initial State is target State. Returning [].")
             return state.get_path_to_state()
         else:
             self.frontier.append(state)
-            logging.debug(f"Added initial state to the frontier:\n{str(state)}.")
+            logger.debug(f"Added initial State to the frontier:\n{str(state)}.")
 
             while self.frontier:  # == while not empty (empty deque is a falsy value)
-                logging.debug(f"Frontier not empty, {len(self.frontier)} elements.")
+                logger.debug(f"Frontier not empty, {len(self.frontier)} elements.")
 
                 examined_state = self.frontier.popleft()
-                logging.debug(
+                logger.debug(
                     f"Popped first element from the deque:\n{str(examined_state)}"
                 )
 
                 self.closed_list[hash(examined_state)] = examined_state
-                logging.debug(
+                logger.debug(
                     f"Added examined_state to the closed_list:\n{hash(examined_state)}: {str(examined_state)}"
                 )
 
-                logging.debug(
+                logger.debug(
                     f"State examined. Fetching neighbors:\n{examined_state.get_neighbors(self.neighbors_query_order)}"
                 )
                 for neighbor in examined_state.get_neighbors(
                     self.neighbors_query_order
                 ):
-                    logging.debug(f"Checking a neighbor:\n{str(neighbor)}")
+                    logger.debug(f"Checking a neighbor:\n{str(neighbor)}")
 
                     if neighbor.is_target_state():
                         path = neighbor.get_path_to_state()
-                        logging.info(f"Found target state, returning path: {path}")
+                        logger.info(f"Found target array, returning path: {path}")
                         return path
                     elif (
                         neighbor in self.frontier or hash(neighbor) in self.closed_list
                     ):
-                        logging.debug(f"Neighbor in open or closed list: {neighbor}")
+                        logger.debug(f"Neighbor in open or closed list: {neighbor}")
                         continue  # do nothing with it
 
                     else:

@@ -29,10 +29,10 @@ class State:
     @staticmethod
     def load_state(filepath: str) -> Optional["State"]:
         """
-        Load initial state for 15 puzzle from a file.
+        Load initial State for 15 puzzle from a file.
 
-        :param filepath: Path to txt file the with initial state
-        :return: A loaded state or None if the operation failed.
+        :param filepath: Path to txt file the with initial State
+        :return: A loaded State or None if the operation failed.
         """
         # TODO: Add :raise <Exception>: docstring
         filepath_ = Path(filepath)
@@ -216,9 +216,12 @@ class State:
             num_range
         ] = 0  # replace last value with 0 symbolising an empty tile
         target_state.reshape(
-            self.state.shape
+            self.array.shape
         )  # reshape the 1D array of consecutive numbers with 0 at the end to match the shape of array we compare with
-        return self == State(state=target_state)
+        return State(array=target_state)
+
+    def is_target_state(self) -> bool:
+        return self == self.target_state
 
     def get_path_to_state(self, path_to_state: List[str] = None) -> str:
         """Get a list of operations required to reach a current State from the first State (i.e. State without a parent)"""

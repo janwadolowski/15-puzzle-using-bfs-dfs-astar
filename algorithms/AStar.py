@@ -1,10 +1,9 @@
-import logging
 from typing import Dict, List, Literal, Optional, TypeAlias
 
 from loguru import logger
 
 from algorithms.BaseAlgorithm import BaseAlgorithm
-from memory.State import TARGET_STATE, State
+from memory.State import State
 
 HEURISTIC_TYPE: TypeAlias = Literal["hamm", "manh"]
 
@@ -74,9 +73,9 @@ class AStar(BaseAlgorithm):
                 if self.max_depth < neighbor.get_state_depth():
                     self.max_depth = neighbor.get_state_depth()
 
-                # Check if neighbor is target state and return if true
+                # Check if neighbor is target State and return if true
                 if neighbor.is_target_state():
-                    logging.debug(
+                    logger.info(
                         f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}"
                     )
                     return neighbor.get_path_to_state()
