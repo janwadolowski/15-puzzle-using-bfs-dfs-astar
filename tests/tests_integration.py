@@ -1,39 +1,50 @@
-import argparse
+import os
+import re
 import sys
+from itertools import permutations
+from pathlib import Path, PurePath
 
 import pytest
 from loguru import logger
 
+PUZZLES_DIRECTORY = Path(r"D:\MEGAsync\Studia\SISE\input_puzzles")
 logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="DEBUG")
 
 
-@pytest.fixture
-def cli_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("Strategy", type=str, help="Algorithm [bfs, dfs, astr]")
-    parser.add_argument(
-        "Strategy_param",
-        type=str,
-        help="Algorithm [bfs&dfs: permutations of [L,R,U,D]; astr: hamm/manh]",
-    )
-    parser.add_argument("Input_file", type=str, help="Input puzzle .txt file")
-    parser.add_argument(
-        "Output_Solution",
-        type=str,
-        help="Output .txt file name with puzzle solution steps",
-    )
-    parser.add_argument(
-        "Output_Stats", type=str, help="Output .txt file with algorithm statistics"
-    )
-    yield parser
+def _absolute_file_paths(directory: PurePath, depth: int | None = None) -> list[str]:
+    """Create a list of absolute filepaths for files in a given directory."""
+    paths: list[str] = []
+    regex = rf"^\dx\d_*0{depth}_\d+.txt"
+    for dirpath, _, filenames in os.walk(directory):
+        for f in filenames:
+            # append a filepath if filename matches a depth level or if depth is not specified
+            if depth is None or re.search(regex, f):
+                paths.append(os.path.abspath(os.path.join(dirpath, f)))
+    return paths
 
 
-# def initialize_dfs(self, cli_parser):
-#     dfs = DFS(cli_parser.)
-#
-#     parsed = parser.(['Strategy', 'dfs'])
-#     yield example_state
+input_puzzle_files = _absolute_file_paths(PUZZLES_DIRECTORY)
+query_order_permutations = permutations("LRUD", 4)
+parameters = [
+    ("astar", ("hamm", "manh"), input_puzzle_files),
+    ("bfs", query_order_permutations, input_puzzle_files),
+    ("dfs", query_order_permutations, input_puzzle_files),
+]
 
-parser = argparse.ArgumentParser()
 
-parsed = parser.parse_args(["Strategy", "dfs"])
+@pytest.mark.parametrize("algorithm, algo_parameter", parameters)
+def test_integration(
+    algorithm,
+    algo_parameter,
+    puzzle_file,
+    expected_output,
+):
+    script = open(Path("../program.py"))
+    code = script.read()
+    # set the arguments to be read by script.py
+    sys.argv = [
+        algorithm,
+        algo_parameter,
+        puzzle_file,
+        expected_output,
+    ]
