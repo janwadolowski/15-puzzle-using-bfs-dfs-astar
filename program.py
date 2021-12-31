@@ -1,18 +1,26 @@
 import argparse
 import datetime
-import logging
 import os
+import sys
+from pathlib import Path
+
+from loguru import logger
 
 from algorithms.AStar import AStar
 from algorithms.BFS import BFS
 from algorithms.DFS import DFS
 from memory.State import State
 
-logging.basicConfig(level=logging.DEBUG)
 # Write logs from program execution to a file
-# logger.add(open(f"log_{datetime.datetime.now()}.txt", "w+"), format="[{elapsed}] {level} {line}: {module}.{function}: {message}", level="INFO")
-# And show error logs in terminal
-# logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="ERROR")
+logger.add(
+    Path("logs/program_exec_info.log"),
+    retention="1 day",
+    format="{elapsed} {level} {line}: {module}.{function}: {message}",
+    level="INFO",
+)
+# And show error logs in STDERR
+logger.add(sys.stderr, format="{elapsed} {level} {function} {message}", level="ERROR")
+logger.remove(0)  # remove the default DEBUG logger
 
 
 def main() -> None:
@@ -23,7 +31,7 @@ def main() -> None:
     parser.add_argument(
         "Strategy_param",
         type=str,
-        help="Algorithm [bfs&dfs: permutations of [L,R,U,D]; astr: hamm/manh]",
+        help="For bfs or dfs: any permutation of: LRUD; For astr: hamm | manh",
     )
     parser.add_argument("Input_file", type=str, help="Input puzzle .txt file")
     parser.add_argument(
