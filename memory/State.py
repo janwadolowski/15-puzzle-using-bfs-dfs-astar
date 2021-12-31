@@ -220,9 +220,9 @@ class State:
             1, num_range + 1
         )  # first create a 1D array 1...n (n is length of a flattened array we compare with)
         target_state[
-            num_range
+            num_range - 1
         ] = 0  # replace last value with 0 symbolising an empty tile
-        target_state.reshape(
+        target_state = target_state.reshape(
             self.array.shape
         )  # reshape the 1D array of consecutive numbers with 0 at the end to match the shape of array we compare with
         return State(array=target_state)
