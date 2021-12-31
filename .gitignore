@@ -131,3 +131,6 @@ dmypy.json
 # IDE settings
 .idea/
 .vscode
+
+# our custom logs directory
+logs/
