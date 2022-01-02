@@ -14,7 +14,7 @@ class BFS(BaseAlgorithm):
         self,
         neighbors_quality_order: str,
     ):
-        self.visited_states = 0
+        self.visited_states = 1  # because we always check at least the initial state
         self.max_depth = 0
         self.closed_list: dict[int, State] = {}  # mapping {hash(State): State}
         self.neighbors_query_order = neighbors_quality_order
@@ -66,6 +66,10 @@ class BFS(BaseAlgorithm):
                     self.neighbors_query_order
                 ):
                     logger.debug(f"Checking a neighbor:\n{str(neighbor)}")
+
+                    self.visited_states += 1
+                    if self.max_depth < neighbor.get_state_depth():
+                        self.max_depth = neighbor.get_state_depth()
 
                     if neighbor.is_target_state():
                         path = neighbor.get_path_to_state()
