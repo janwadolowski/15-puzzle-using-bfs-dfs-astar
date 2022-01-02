@@ -1,5 +1,4 @@
 import queue
-from typing import Dict, List, Optional
 
 from loguru import logger
 
@@ -13,11 +12,11 @@ class DFS(BaseAlgorithm):
     def __init__(self, neighbors_quality_order: str):
         self.neighbors_quality_order = neighbors_quality_order
         self.open_list: queue.LifoQueue[State] = queue.LifoQueue()
-        self.closed_list: Dict[int, State] = {}
+        self.closed_list: dict[int, State] = {}
         self.max_depth: int = 0
         self.visited_states: int = 1
 
-    def solve(self, state: State) -> Optional[str]:
+    def solve(self, state: State) -> str | None:
         """
         Steps of the algorithm:
         1. check if starting State is the target State, if yes return the path to it, else proceed
@@ -48,7 +47,7 @@ class DFS(BaseAlgorithm):
                 tmp_state = self.open_list.get_nowait()
 
             # Get a list of all neighbors for the current node and reverse order
-            neighbors: List[State] = tmp_state.get_neighbors(
+            neighbors: list[State] = tmp_state.get_neighbors(
                 self.neighbors_quality_order
             )
             neighbors.reverse()

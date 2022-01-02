@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, Optional, TypeAlias
+from typing import Literal, TypeAlias
 
 from loguru import logger
 
@@ -13,8 +13,8 @@ class AStar(BaseAlgorithm):
 
     def __init__(self, heuristic_type: HEURISTIC_TYPE):
         self.heuristic_type = heuristic_type
-        self.open_list: Dict[int, State] = {}
-        self.closed_list: Dict[int, State] = {}
+        self.open_list: dict[int, State] = {}
+        self.closed_list: dict[int, State] = {}
         self.max_depth: int = 0
         self.visited_states: int = 1
 
@@ -36,7 +36,7 @@ class AStar(BaseAlgorithm):
         If no solution has been found - return None
         """
 
-    def solve(self, state: State) -> Optional[str]:
+    def solve(self, state: State) -> str | None:
 
         # Check if starting State is target State
         if state.is_target_state():
@@ -62,7 +62,7 @@ class AStar(BaseAlgorithm):
             self.open_list.pop(tmp_key)
 
             # Get neighbors for State
-            neighbors: List[State] = tmp_state.get_neighbors()
+            neighbors: list[State] = tmp_state.get_neighbors()
 
             # Add tmp_state to closed_list after checking neighbors
             self.closed_list[tmp_key] = tmp_state

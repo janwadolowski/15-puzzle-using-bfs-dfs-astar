@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Deque, Dict, Optional
+from typing import Deque
 
 from loguru import logger
 
@@ -16,11 +16,11 @@ class BFS(BaseAlgorithm):
     ):
         self.visited_states = 0
         self.max_depth = 0
-        self.closed_list: Dict[int, State] = {}  # mapping {hash(State): State}
+        self.closed_list: dict[int, State] = {}  # mapping {hash(State): State}
         self.neighbors_query_order = neighbors_quality_order
         self.frontier: Deque[State] = deque()
 
-    def solve(self, state: State) -> Optional[str]:
+    def solve(self, state: State) -> str | None:
         """
         Steps of the algorithm:
         1. check if a State is the target array, if yes return, no moves need to be taken as the initial State is the target State, else:
@@ -69,12 +69,16 @@ class BFS(BaseAlgorithm):
 
                     if neighbor.is_target_state():
                         path = neighbor.get_path_to_state()
-                        logger.info(f"Found target array, returning path: {path}")
+                        logger.info(
+                            f"PUZZLE SOLVED - DEPTH={self.max_depth}, path={neighbor.get_path_to_state()}"
+                        )
                         return path
                     elif (
                         neighbor in self.frontier or hash(neighbor) in self.closed_list
                     ):
-                        logger.debug(f"Neighbor in open or closed list: {neighbor}")
+                        logger.debug(
+                            f"Neighbor in open or closed list: {str(neighbor)}"
+                        )
                         continue  # do nothing with it
 
                     else:
