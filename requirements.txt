@@ -1,5 +1,5 @@
 numpy==1.21.5
 pytest==6.2.5
-setuptools~=60.8.1
+setuptools~=60.9.0
 pytest-mock~=3.7.0
 loguru~=0.5.3
